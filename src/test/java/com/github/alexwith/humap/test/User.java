@@ -4,21 +4,25 @@ import com.github.alexwith.humap.annotation.Collection;
 import com.github.alexwith.humap.annotation.EntityId;
 import com.github.alexwith.humap.entity.IdEntity;
 import java.util.UUID;
+import java.util.function.UnaryOperator;
 
-@Collection("test-entity")
-public class TestEntity implements IdEntity<UUID> {
+@Collection("user")
+public class User implements IdEntity<UUID> {
 
     @EntityId
     private UUID id;
 
     private String name;
 
-    public TestEntity(UUID id, String name) {
+    private int score;
+
+    public User(UUID id, String name, int score) {
         this.id = id;
         this.name = name;
+        this.score = score;
     }
 
-    protected TestEntity() {}
+    protected User() {}
 
     @Override
     public UUID getId() {
@@ -31,5 +35,13 @@ public class TestEntity implements IdEntity<UUID> {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getScore() {
+        return this.score;
+    }
+
+    public void modifyScore(UnaryOperator<Integer> modifier) {
+        this.score = modifier.apply(this.score);
     }
 }

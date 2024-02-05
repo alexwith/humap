@@ -3,7 +3,7 @@ package com.github.alexwith.humap.test;
 import com.github.alexwith.humap.repository.Repository;
 import java.util.UUID;
 
-public interface TestRepository extends Repository<UUID, TestEntity> {
+public interface UserRepository extends Repository<UUID, User> {
 
-    TestEntity findByName(String name);
+    User findByName(String name);
 }
