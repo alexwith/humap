@@ -11,6 +11,8 @@ repositories {
 
 dependencies {
     implementation("org.mongodb:mongodb-driver-sync:4.7.2")
+    implementation("net.bytebuddy:byte-buddy:1.14.11")
+    implementation("net.bytebuddy:byte-buddy-agent:1.14.11")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 }
