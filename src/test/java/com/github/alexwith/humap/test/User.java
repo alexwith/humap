@@ -2,6 +2,7 @@ package com.github.alexwith.humap.test;
 
 import com.github.alexwith.humap.annotation.Collection;
 import com.github.alexwith.humap.annotation.EntityId;
+import com.github.alexwith.humap.annotation.Modifies;
 import com.github.alexwith.humap.entity.IdEntity;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
@@ -41,6 +42,7 @@ public class User implements IdEntity<UUID> {
         return this.score;
     }
 
+    @Modifies("score")
     public void modifyScore(UnaryOperator<Integer> modifier) {
         this.score = modifier.apply(this.score);
     }
