@@ -2,21 +2,25 @@ plugins {
     id("java")
 }
 
-group = "com.github.alexwith.humap"
-version = "0.0.1"
+subprojects {
+    apply(plugin = "java")
 
-repositories {
-    mavenCentral()
-}
+    group = "com.github.alexwith.humap"
+    version = "0.0.1"
 
-dependencies {
-    implementation("org.mongodb:mongodb-driver-sync:4.7.2")
-    implementation("net.bytebuddy:byte-buddy:1.14.11")
-    implementation("net.bytebuddy:byte-buddy-agent:1.14.11")
+    repositories {
+        mavenCentral()
+    }
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
-}
+    dependencies {
+        implementation("org.mongodb:mongodb-driver-sync:4.7.2")
+        implementation("net.bytebuddy:byte-buddy:1.14.11")
+        implementation("net.bytebuddy:byte-buddy-agent:1.14.11")
 
-tasks.test {
-    useJUnitPlatform()
+        testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+    }
+
+    tasks.test {
+        useJUnitPlatform()
+    }
 }
