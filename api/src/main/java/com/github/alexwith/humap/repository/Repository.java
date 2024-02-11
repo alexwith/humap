@@ -1,6 +1,7 @@
 package com.github.alexwith.humap.repository;
 
 import com.github.alexwith.humap.entity.IdEntity;
+import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.query.Query;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -18,7 +19,7 @@ public interface Repository<K, T extends IdEntity<K>> {
      * @return An instance of the specified repository class
      */
     static <K, T extends IdEntity<K>, U extends Repository<K, T>> U get(Class<U> repositoryClass) {
-        return null;
+        return Instances.get(RepositoryManager.class).get(repositoryClass);
     }
 
     /**
