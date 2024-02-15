@@ -21,6 +21,7 @@ public class Humap {
         this.repositoryManager = new RepositoryManagerImpl();
 
         Instances.register(
+            this.proxyFactory,
             this.repositoryManager
         );
     }

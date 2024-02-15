@@ -3,6 +3,7 @@ package com.github.alexwith.hunmap.test;
 import com.github.alexwith.humap.annotation.Collection;
 import com.github.alexwith.humap.annotation.EntityId;
 import com.github.alexwith.humap.annotation.Modifies;
+import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.IdEntity;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
@@ -17,8 +18,7 @@ public class User implements IdEntity<UUID> {
 
     private int score;
 
-    public User(UUID id, String name, int score) {
-        this.id = id;
+    public User(String name, int score) {
         this.name = name;
         this.score = score;
     }
