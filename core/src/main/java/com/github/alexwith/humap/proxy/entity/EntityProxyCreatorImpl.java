@@ -4,6 +4,7 @@ import com.github.alexwith.humap.annotation.Modifies;
 import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.proxy.ProxyCreationContext;
 import com.github.alexwith.humap.proxy.ProxyCreatorImpl;
+import com.github.alexwith.humap.util.SneakyThrows;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -43,7 +44,8 @@ public class EntityProxyCreatorImpl<T extends Entity> extends ProxyCreatorImpl<T
 
     @Override
     public T create(ProxyCreationContext context) {
-        return null;
+        final T entity = SneakyThrows.supply(this.constructor::newInstance);
+        return entity;
     }
 
     private void populateFields() {

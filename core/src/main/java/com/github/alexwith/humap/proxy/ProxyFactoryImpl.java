@@ -6,11 +6,20 @@ import com.github.alexwith.humap.proxy.collection.CollectionProxyCreator;
 import com.github.alexwith.humap.proxy.entity.EntityProxyCreatorImpl;
 import com.github.alexwith.humap.proxy.map.MapProxyCreator;
 import com.github.alexwith.humap.type.ParamedType;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.implementation.bind.annotation.AllArguments;
+import net.bytebuddy.implementation.bind.annotation.Origin;
+import net.bytebuddy.implementation.bind.annotation.RuntimeType;
+import net.bytebuddy.implementation.bind.annotation.SuperCall;
+import net.bytebuddy.implementation.bind.annotation.This;
+import net.bytebuddy.matcher.ElementMatchers;
 
 public class ProxyFactoryImpl implements ProxyFactory {
     private final Map<Class<?>, ProxyCreator<?>> proxyCreators = new ConcurrentHashMap<>();
@@ -34,7 +43,8 @@ public class ProxyFactoryImpl implements ProxyFactory {
             return (ProxyCreator<T>) this.proxyCreators.get(clazz);
         }
 
-        final DynamicType.Builder<T> builder = new ByteBuddy().subclass(clazz);
+        DynamicType.Builder<T> builder = new ByteBuddy().subclass(clazz);
+        builder = this.testInterceptor(builder);
 
         final Class<? extends T> proxiedClass = builder.make().load(CLASS_LOADER).getLoaded();
         final ProxyCreator<T> proxyCreator = onAbsent.make(proxiedClass);
@@ -67,5 +77,21 @@ public class ProxyFactoryImpl implements ProxyFactory {
 
     private <T extends Map<?, ?>> ProxyCreator<T> createMapProxy(Class<T> clazz) {
         return this.getProxyCreator(clazz, (proxiedClass) -> new MapProxyCreator<>(clazz, proxiedClass));
+    }
+
+    private <T> DynamicType.Builder<T> testInterceptor(DynamicType.Builder<T> builder) {
+        return builder.method(ElementMatchers.any())
+            .intercept(MethodDelegation
+                .withDefaultConfiguration()
+                .to(new TestInterceptor())
+            );
+    }
+
+    public static class TestInterceptor {
+
+        @RuntimeType
+        public void intercept(@This Object subject, @Origin Method method, @SuperCall Callable<?> superMethod, @AllArguments Object[] args) {
+            System.out.println("method called: " + method.getName());
+        }
     }
 }
