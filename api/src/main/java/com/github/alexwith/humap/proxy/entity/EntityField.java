@@ -1,6 +1,7 @@
 package com.github.alexwith.humap.proxy.entity;
 
 import com.github.alexwith.humap.entity.Entity;
+import com.github.alexwith.humap.type.ParamedType;
 import java.lang.reflect.Field;
 
 public interface EntityField {
@@ -8,6 +9,8 @@ public interface EntityField {
     Field getField();
 
     String getName();
+
+    ParamedType getType();
 
     boolean isProxyable();
 

@@ -1,12 +1,14 @@
 package com.github.alexwith.humap.proxy;
 
-import java.lang.reflect.Constructor;
+public interface Proxy {
 
-public interface Proxy<T> {
+    static boolean isProxied(Object object) {
+        return object instanceof Proxy;
+    }
 
-    Class<T> getOriginClass();
+    static <U, T extends ProxyCreator<U>> T getCreator(Object object) {
+        return Proxy.isProxied(object) ? ((Proxy) object).getCreator() : null;
+    }
 
-    Class<? extends T> getClazz();
-
-    Constructor<? extends T> getConstructor();
+    <U, T extends ProxyCreator<U>> T getCreator();
 }

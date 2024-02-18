@@ -3,12 +3,12 @@ package com.github.alexwith.humap.proxy;
 import com.github.alexwith.humap.util.SneakyThrows;
 import java.lang.reflect.Constructor;
 
-public abstract class ProxyImpl<T> implements Proxy<T> {
+public abstract class ProxyCreatorImpl<T> implements ProxyCreator<T> {
     protected final Class<T> originClass;
     protected final Class<? extends T> clazz;
     protected final Constructor<? extends T> constructor;
 
-    public ProxyImpl(Class<T> originClass, Class<? extends T> clazz) {
+    public ProxyCreatorImpl(Class<T> originClass, Class<? extends T> clazz) {
         this.originClass = originClass;
         this.clazz = clazz;
         this.constructor = SneakyThrows.supply(clazz::getDeclaredConstructor);

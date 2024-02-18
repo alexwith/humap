@@ -1,6 +1,8 @@
 package com.github.alexwith.humap.proxy.entity;
 
 import com.github.alexwith.humap.entity.Entity;
+import com.github.alexwith.humap.type.ParamedType;
+import com.github.alexwith.humap.type.ParamedTypeImpl;
 import com.github.alexwith.humap.util.SneakyThrows;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -9,6 +11,7 @@ import java.lang.reflect.Field;
 public class EntityFieldImpl implements EntityField {
     private final Field field;
     private final String name;
+    private final ParamedType type;
     private final boolean isProxyable;
     private final MethodHandle getterHandle;
     private final MethodHandle setterHandle;
@@ -18,6 +21,7 @@ public class EntityFieldImpl implements EntityField {
 
         this.field = field;
         this.name = field.getName();
+        this.type = new ParamedTypeImpl(field);
         this.isProxyable = false;
         this.getterHandle = this.createMethodHandle(MethodHandles.Lookup::unreflectGetter);
         this.setterHandle = this.createMethodHandle(MethodHandles.Lookup::unreflectSetter);
@@ -31,6 +35,11 @@ public class EntityFieldImpl implements EntityField {
     @Override
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    public ParamedType getType() {
+        return this.type;
     }
 
     @Override

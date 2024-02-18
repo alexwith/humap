@@ -2,18 +2,19 @@ package com.github.alexwith.humap.proxy.entity;
 
 import com.github.alexwith.humap.annotation.Modifies;
 import com.github.alexwith.humap.entity.Entity;
-import com.github.alexwith.humap.proxy.ProxyImpl;
+import com.github.alexwith.humap.proxy.ProxyCreationContext;
+import com.github.alexwith.humap.proxy.ProxyCreatorImpl;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EntityProxyImpl<T extends Entity> extends ProxyImpl<T> implements EntityProxy<T> {
+public class EntityProxyCreatorImpl<T extends Entity> extends ProxyCreatorImpl<T> implements EntityProxyCreator<T> {
     private final Map<String, EntityField> fields = new HashMap<>();
     private final Map<String, EntityModifyMethod> modifyMethods = new HashMap<>();
 
-    public EntityProxyImpl(Class<T> originClass, Class<? extends T> clazz) {
+    public EntityProxyCreatorImpl(Class<T> originClass, Class<? extends T> clazz) {
         super(originClass, clazz);
 
         this.populateFields();
@@ -38,6 +39,11 @@ public class EntityProxyImpl<T extends Entity> extends ProxyImpl<T> implements E
     @Override
     public EntityModifyMethod getModifyMethod(String name) {
         return this.modifyMethods.get(name.toLowerCase());
+    }
+
+    @Override
+    public T create(ProxyCreationContext context) {
+        return null;
     }
 
     private void populateFields() {
