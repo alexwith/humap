@@ -49,23 +49,23 @@ public class ProxyFactoryImpl implements ProxyFactory {
         if (Entity.class.isAssignableFrom(clazz)) {
             return (ProxyCreator<T>) this.createEntityProxy((Class<? extends Entity>) clazz);
         } else if (Collection.class.isAssignableFrom(clazz)) {
-            return (ProxyCreator<T>) this.createCollection((Class<? extends Collection<?>>) clazz);
+            return (ProxyCreator<T>) this.createCollectionProxy((Class<? extends Collection<?>>) clazz);
         } else if (Map.class.isAssignableFrom(clazz)) {
-            return (ProxyCreator<T>) this.createMap((Class<? extends Map<?, ?>>) clazz);
+            return (ProxyCreator<T>) this.createMapProxy((Class<? extends Map<?, ?>>) clazz);
         }
 
         throw new NonProxyableClassException(clazz);
     }
 
-    private <T extends Entity> ProxyCreator<T> createEntityProxy(Class<T> originClass) {
-        return this.getProxyCreator(originClass, (proxiedClass) -> new EntityProxyCreatorImpl<>(originClass, proxiedClass));
+    private <T extends Entity> ProxyCreator<T> createEntityProxy(Class<T> clazz) {
+        return this.getProxyCreator(clazz, (proxiedClass) -> new EntityProxyCreatorImpl<>(clazz, proxiedClass));
     }
 
-    private <T extends Collection<?>> ProxyCreator<T> createCollection(Class<T> originClass) {
-        return this.getProxyCreator(originClass, (proxiedClass) -> new CollectionProxyCreator<>(originClass, proxiedClass));
+    private <T extends Collection<?>> ProxyCreator<T> createCollectionProxy(Class<T> clazz) {
+        return this.getProxyCreator(clazz, (proxiedClass) -> new CollectionProxyCreator<>(clazz, proxiedClass));
     }
 
-    private <T extends Map<?, ?>> ProxyCreator<T> createMap(Class<T> originClass) {
-        return this.getProxyCreator(originClass, (proxiedClass) -> new MapProxyCreator<>(originClass, proxiedClass));
+    private <T extends Map<?, ?>> ProxyCreator<T> createMapProxy(Class<T> clazz) {
+        return this.getProxyCreator(clazz, (proxiedClass) -> new MapProxyCreator<>(clazz, proxiedClass));
     }
 }
