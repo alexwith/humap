@@ -4,27 +4,32 @@ import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.exception.NonProxyableClassException;
 import com.github.alexwith.humap.proxy.collection.CollectionProxyCreator;
 import com.github.alexwith.humap.proxy.entity.EntityProxyCreatorImpl;
+import com.github.alexwith.humap.proxy.interceptor.Interceptor;
+import com.github.alexwith.humap.proxy.interceptor.ToStringInterceptor;
 import com.github.alexwith.humap.proxy.map.MapProxyCreator;
+import com.github.alexwith.humap.proxy.shadow.ShadowField;
+import com.github.alexwith.humap.proxy.shadow.ShadowFieldImpl;
 import com.github.alexwith.humap.type.ParamedType;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.Callable;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.implementation.MethodDelegation;
-import net.bytebuddy.implementation.bind.annotation.AllArguments;
-import net.bytebuddy.implementation.bind.annotation.Origin;
-import net.bytebuddy.implementation.bind.annotation.RuntimeType;
-import net.bytebuddy.implementation.bind.annotation.SuperCall;
-import net.bytebuddy.implementation.bind.annotation.This;
-import net.bytebuddy.matcher.ElementMatchers;
 
 public class ProxyFactoryImpl implements ProxyFactory {
     private final Map<Class<?>, ProxyCreator<?>> proxyCreators = new ConcurrentHashMap<>();
 
     private static final ClassLoader CLASS_LOADER = ProxyFactory.class.getClassLoader();
+    private static final Map<Class<?>, Set<Interceptor<?, ?>>> INTERCEPTORS = Map.of(
+        Entity.class, Set.of(
+            new ToStringInterceptor()
+        )
+    );
+    private static final Set<ShadowField> SHADOW_FIELDS = Set.of(
+        ShadowFieldImpl.of("creator", ProxyCreator.class)
+            .withGetter()
+    );
 
     @Override
     @SuppressWarnings("unchecked")
@@ -43,8 +48,9 @@ public class ProxyFactoryImpl implements ProxyFactory {
             return (ProxyCreator<T>) this.proxyCreators.get(clazz);
         }
 
-        DynamicType.Builder<T> builder = new ByteBuddy().subclass(clazz);
-        builder = this.testInterceptor(builder);
+        DynamicType.Builder<T> builder = new ByteBuddy().subclass(clazz).implement(Proxy.class);
+        builder = this.applyShadowFields(builder);
+        builder = this.applyInterceptors(clazz, builder);
 
         final Class<? extends T> proxiedClass = builder.make().load(CLASS_LOADER).getLoaded();
         final ProxyCreator<T> proxyCreator = onAbsent.make(proxiedClass);
@@ -79,19 +85,27 @@ public class ProxyFactoryImpl implements ProxyFactory {
         return this.getProxyCreator(clazz, (proxiedClass) -> new MapProxyCreator<>(clazz, proxiedClass));
     }
 
-    private <T> DynamicType.Builder<T> testInterceptor(DynamicType.Builder<T> builder) {
-        return builder.method(ElementMatchers.any())
-            .intercept(MethodDelegation
-                .withDefaultConfiguration()
-                .to(new TestInterceptor())
-            );
+    @SuppressWarnings("unchecked")
+    private <T, U extends DynamicType.Builder<T>> U applyInterceptors(Class<T> clazz, U builder) {
+        for (final Map.Entry<Class<?>, Set<Interceptor<?, ?>>> entry : INTERCEPTORS.entrySet()) {
+            final Class<?> targetClass = entry.getKey();
+            if (!targetClass.isAssignableFrom(clazz)) {
+                continue;
+            }
+
+            for (final Interceptor<?, ?> interceptor : entry.getValue()) {
+                builder = (U) interceptor.apply(builder);
+            }
+        }
+
+        return builder;
     }
 
-    public static class TestInterceptor {
-
-        @RuntimeType
-        public void intercept(@This Object subject, @Origin Method method, @SuperCall Callable<?> superMethod, @AllArguments Object[] args) {
-            System.out.println("method called: " + method.getName());
+    private <T, U extends DynamicType.Builder<T>> U applyShadowFields(U builder) {
+        for (final ShadowField field : SHADOW_FIELDS) {
+            builder = field.apply(builder);
         }
+
+        return builder;
     }
 }

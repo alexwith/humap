@@ -9,10 +9,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class EntityProxyCreatorImpl<T extends Entity> extends ProxyCreatorImpl<T> implements EntityProxyCreator<T> {
-    private final Map<String, EntityField> fields = new HashMap<>();
+    // linked so it's easier to view through Entity#toString
+    private final Map<String, EntityField> fields = new LinkedHashMap<>();
     private final Map<String, EntityModifyMethod> modifyMethods = new HashMap<>();
 
     public EntityProxyCreatorImpl(Class<T> originClass, Class<? extends T> clazz) {
@@ -45,6 +47,12 @@ public class EntityProxyCreatorImpl<T extends Entity> extends ProxyCreatorImpl<T
     @Override
     public T create(ProxyCreationContext context) {
         final T entity = SneakyThrows.supply(this.constructor::newInstance);
+
+        SneakyThrows.run(() -> { // TODO: This is temp, find a better way
+            final Field field = entity.getClass().getDeclaredField("creator");
+            field.set(entity, this);
+        });
+
         return entity;
     }
 
