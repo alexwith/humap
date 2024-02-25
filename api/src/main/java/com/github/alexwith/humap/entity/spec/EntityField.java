@@ -1,4 +1,4 @@
-package com.github.alexwith.humap.proxy.entity;
+package com.github.alexwith.humap.entity.spec;
 
 import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.type.ParamedType;

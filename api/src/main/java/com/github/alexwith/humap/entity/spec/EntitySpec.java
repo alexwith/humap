@@ -1,10 +1,11 @@
-package com.github.alexwith.humap.proxy.entity;
+package com.github.alexwith.humap.entity.spec;
 
 import com.github.alexwith.humap.entity.Entity;
-import com.github.alexwith.humap.proxy.ProxyCreator;
 import java.util.Map;
 
-public interface EntityProxyCreator<T extends Entity> extends ProxyCreator<T> {
+public interface EntitySpec {
+
+    Class<? extends Entity> getOriginClass();
 
     Map<String, EntityField> getFields();
 

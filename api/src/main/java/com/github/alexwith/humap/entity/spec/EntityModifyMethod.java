@@ -1,4 +1,4 @@
-package com.github.alexwith.humap.proxy.entity;
+package com.github.alexwith.humap.entity.spec;
 
 import java.lang.reflect.Method;
 

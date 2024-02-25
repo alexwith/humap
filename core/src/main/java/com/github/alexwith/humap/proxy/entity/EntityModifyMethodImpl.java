@@ -1,5 +1,7 @@
 package com.github.alexwith.humap.proxy.entity;
 
+import com.github.alexwith.humap.entity.spec.EntityField;
+import com.github.alexwith.humap.entity.spec.EntityModifyMethod;
 import java.lang.reflect.Method;
 
 public class EntityModifyMethodImpl implements EntityModifyMethod {

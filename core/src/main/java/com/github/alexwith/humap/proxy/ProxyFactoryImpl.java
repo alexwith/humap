@@ -1,9 +1,10 @@
 package com.github.alexwith.humap.proxy;
 
 import com.github.alexwith.humap.entity.Entity;
+import com.github.alexwith.humap.entity.spec.EntitySpec;
 import com.github.alexwith.humap.exception.NonProxyableClassException;
 import com.github.alexwith.humap.proxy.collection.CollectionProxyCreator;
-import com.github.alexwith.humap.proxy.entity.EntityProxyCreatorImpl;
+import com.github.alexwith.humap.proxy.entity.EntityProxyCreator;
 import com.github.alexwith.humap.proxy.interceptor.Interceptor;
 import com.github.alexwith.humap.proxy.interceptor.ToStringInterceptor;
 import com.github.alexwith.humap.proxy.map.MapProxyCreator;
@@ -27,7 +28,7 @@ public class ProxyFactoryImpl implements ProxyFactory {
         )
     );
     private static final Set<ShadowField> SHADOW_FIELDS = Set.of(
-        ShadowFieldImpl.of("creator", ProxyCreator.class)
+        ShadowFieldImpl.of("spec", EntitySpec.class)
             .withGetter()
     );
 
@@ -74,7 +75,7 @@ public class ProxyFactoryImpl implements ProxyFactory {
     }
 
     private <T extends Entity> ProxyCreator<T> createEntityProxy(Class<T> clazz) {
-        return this.getProxyCreator(clazz, (proxiedClass) -> new EntityProxyCreatorImpl<>(clazz, proxiedClass));
+        return this.getProxyCreator(clazz, (proxiedClass) -> new EntityProxyCreator<>(clazz, proxiedClass));
     }
 
     private <T extends Collection<?>> ProxyCreator<T> createCollectionProxy(Class<T> clazz) {

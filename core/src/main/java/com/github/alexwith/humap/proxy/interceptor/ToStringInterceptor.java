@@ -1,10 +1,10 @@
 package com.github.alexwith.humap.proxy.interceptor;
 
 import com.github.alexwith.humap.entity.Entity;
+import com.github.alexwith.humap.entity.spec.EntityField;
+import com.github.alexwith.humap.entity.spec.EntitySpec;
 import com.github.alexwith.humap.proxy.Morpher;
 import com.github.alexwith.humap.proxy.Proxy;
-import com.github.alexwith.humap.proxy.entity.EntityField;
-import com.github.alexwith.humap.proxy.entity.EntityProxyCreator;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 import net.bytebuddy.matcher.ElementMatchers;
@@ -17,10 +17,10 @@ public class ToStringInterceptor extends InterceptorImpl<Entity, String> {
 
     @Override
     public String intercept(Entity object, Proxy proxy, Method method, Callable<?> superMethod, Morpher morpher, Object[] args) {
-        final EntityProxyCreator<Entity> proxyCreator = proxy.getCreator();
+        final EntitySpec spec = object.getSpec();
 
-        final StringBuilder builder = new StringBuilder("%s={".formatted(proxyCreator.getOriginClass()));
-        for (final EntityField field : proxyCreator.getFields().values()) {
+        final StringBuilder builder = new StringBuilder("%s={".formatted(spec.getOriginClass()));
+        for (final EntityField field : spec.getFields().values()) {
             final Object value = field.getValue(object);
             builder.append(field.getName())
                 .append(": ")

@@ -1,10 +1,9 @@
-package com.github.alexwith.humap.proxy.entity;
+package com.github.alexwith.humap.entity.spec;
 
 import com.github.alexwith.humap.annotation.Modifies;
 import com.github.alexwith.humap.entity.Entity;
-import com.github.alexwith.humap.proxy.ProxyCreationContext;
-import com.github.alexwith.humap.proxy.ProxyCreatorImpl;
-import com.github.alexwith.humap.util.SneakyThrows;
+import com.github.alexwith.humap.proxy.entity.EntityFieldImpl;
+import com.github.alexwith.humap.proxy.entity.EntityModifyMethodImpl;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -12,16 +11,22 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class EntityProxyCreatorImpl<T extends Entity> extends ProxyCreatorImpl<T> implements EntityProxyCreator<T> {
+public class EntitySpecImpl implements EntitySpec {
+    private final Class<? extends Entity> originClass;
     // linked so it's easier to view through Entity#toString
     private final Map<String, EntityField> fields = new LinkedHashMap<>();
     private final Map<String, EntityModifyMethod> modifyMethods = new HashMap<>();
 
-    public EntityProxyCreatorImpl(Class<T> originClass, Class<? extends T> clazz) {
-        super(originClass, clazz);
+    public EntitySpecImpl(Class<? extends Entity> originClass) {
+        this.originClass = originClass;
 
         this.populateFields();
         this.populateModifyMethods();
+    }
+
+    @Override
+    public Class<? extends Entity> getOriginClass() {
+        return this.originClass;
     }
 
     @Override
@@ -42,18 +47,6 @@ public class EntityProxyCreatorImpl<T extends Entity> extends ProxyCreatorImpl<T
     @Override
     public EntityModifyMethod getModifyMethod(String name) {
         return this.modifyMethods.get(name.toLowerCase());
-    }
-
-    @Override
-    public T create(ProxyCreationContext context) {
-        final T entity = SneakyThrows.supply(this.constructor::newInstance);
-
-        SneakyThrows.run(() -> { // TODO: This is temp, find a better way
-            final Field field = entity.getClass().getDeclaredField("creator");
-            field.set(entity, this);
-        });
-
-        return entity;
     }
 
     private void populateFields() {

@@ -1,6 +1,7 @@
 package com.github.alexwith.humap.proxy.entity;
 
 import com.github.alexwith.humap.entity.Entity;
+import com.github.alexwith.humap.entity.spec.EntityField;
 import com.github.alexwith.humap.type.ParamedType;
 import com.github.alexwith.humap.type.ParamedTypeImpl;
 import com.github.alexwith.humap.util.SneakyThrows;
