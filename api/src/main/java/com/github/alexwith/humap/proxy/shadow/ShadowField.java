@@ -8,9 +8,27 @@ import net.bytebuddy.dynamic.DynamicType;
  */
 public interface ShadowField {
 
+    /**
+     * Adds a getter to the shadow field
+     *
+     * @return This shadow field
+     */
     ShadowField withGetter();
 
+    /**
+     * Adds a setter to the shadow field
+     *
+     * @return This shadow field
+     */
     ShadowField withSetter();
 
+    /**
+     * Modifies the builder by applying the
+     * shadow field and returns the modified
+     * builder
+     *
+     * @param builder The builder to append to
+     * @return The modified builder
+     */
     <T, U extends DynamicType.Builder<T>> U apply(U builder);
 }
