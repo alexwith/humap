@@ -5,6 +5,7 @@ import com.github.alexwith.humap.entity.spec.EntityField;
 import com.github.alexwith.humap.entity.spec.EntitySpec;
 import com.github.alexwith.humap.proxy.Morpher;
 import com.github.alexwith.humap.proxy.Proxy;
+import com.github.alexwith.humap.proxy.decorator.InterceptorImpl;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 import net.bytebuddy.matcher.ElementMatchers;

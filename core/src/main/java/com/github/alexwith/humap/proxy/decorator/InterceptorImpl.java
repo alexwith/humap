@@ -1,4 +1,4 @@
-package com.github.alexwith.humap.proxy.interceptor;
+package com.github.alexwith.humap.proxy.decorator;
 
 import com.github.alexwith.humap.proxy.Morpher;
 import com.github.alexwith.humap.proxy.Proxy;

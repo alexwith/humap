@@ -1,4 +1,4 @@
-package com.github.alexwith.humap.proxy.shadow;
+package com.github.alexwith.humap.proxy.decorator;
 
 import java.lang.reflect.Type;
 import net.bytebuddy.description.modifier.FieldPersistence;
@@ -37,18 +37,17 @@ public class ShadowFieldImpl implements ShadowField {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T, U extends DynamicType.Builder<T>> U apply(U builder) {
-        builder = (U) builder.defineField(this.name, this.type, FieldPersistence.TRANSIENT, Visibility.PUBLIC);
+    public DynamicType.Builder<?> apply(DynamicType.Builder<?> builder) {
+        builder = builder.defineField(this.name, this.type, FieldPersistence.TRANSIENT, Visibility.PUBLIC);
 
         if (this.getter) {
-            builder = (U) builder
+            builder = builder
                 .defineMethod("get".concat(this.capitalizedName), this.type, Visibility.PUBLIC)
                 .intercept(FieldAccessor.ofField(this.name));
         }
 
         if (this.setter) {
-            builder = (U) builder
+            builder = builder
                 .defineMethod("set".concat(this.capitalizedName), this.type, Visibility.PUBLIC)
                 .withParameters(this.type)
                 .intercept(FieldAccessor.ofField(this.name));
