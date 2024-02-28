@@ -10,10 +10,13 @@ import java.util.Set;
 
 public class ProxyConstants {
 
+    public static final String PREFIX = "humap$";
+    public static final String ENTITY_SPEC_FIELD = PREFIX + "spec";
+
     public static final Map<Class<?>, Set<Decorator>> DECORATORS = Map.of(
         Entity.class, Set.of(
             new ToStringInterceptor(),
-            ShadowFieldImpl.of("spec", EntitySpec.class)
+            ShadowFieldImpl.of(ENTITY_SPEC_FIELD, EntitySpec.class)
                 .withGetter()
         )
     );
