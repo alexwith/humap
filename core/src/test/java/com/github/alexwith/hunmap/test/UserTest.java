@@ -5,6 +5,7 @@ import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.proxy.ProxyCreationContextImpl;
 import com.github.alexwith.humap.proxy.ProxyFactoryImpl;
 import com.github.alexwith.humap.type.ParamedTypeImpl;
+import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -25,11 +26,14 @@ public class UserTest {
         //final User user = Entity.create(new User("Alex", 10));
 
         final User user = Instances.get(ProxyFactoryImpl.class).proxy(new ProxyCreationContextImpl(
-            new User("Alex", 10),
-            new ParamedTypeImpl(User.class)
+            new User("Alex", 10, new ArrayList<>()),
+            new ParamedTypeImpl(User.class),
+            null
         ));
 
         System.out.println("user: " + user);
         System.out.println("test: " + user.getName());
+
+        user.setName("Bob");
     }
 }

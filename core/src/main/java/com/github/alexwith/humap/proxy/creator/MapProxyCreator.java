@@ -1,7 +1,7 @@
-package com.github.alexwith.humap.proxy.map;
+package com.github.alexwith.humap.proxy.creator;
 
 import com.github.alexwith.humap.proxy.ProxyCreationContext;
-import com.github.alexwith.humap.proxy.ProxyCreatorImpl;
+import com.github.alexwith.humap.util.SneakyThrows;
 import java.util.Map;
 
 public class MapProxyCreator<T extends Map<?, ?>> extends ProxyCreatorImpl<T> {
@@ -12,6 +12,9 @@ public class MapProxyCreator<T extends Map<?, ?>> extends ProxyCreatorImpl<T> {
 
     @Override
     public T create(ProxyCreationContext context) {
-        return null;
+        final T map = SneakyThrows.supply(this.constructor::newInstance);
+        this.applyGlobals(map, context);
+
+        return map;
     }
 }

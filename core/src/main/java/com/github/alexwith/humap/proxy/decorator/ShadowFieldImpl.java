@@ -1,5 +1,6 @@
 package com.github.alexwith.humap.proxy.decorator;
 
+import com.github.alexwith.humap.proxy.ProxyConstants;
 import java.lang.reflect.Type;
 import net.bytebuddy.description.modifier.FieldPersistence;
 import net.bytebuddy.description.modifier.Visibility;
@@ -17,7 +18,7 @@ public class ShadowFieldImpl implements ShadowField {
     private ShadowFieldImpl(String name, Type type) {
         this.name = name;
         this.type = type;
-        this.capitalizedName = Character.toUpperCase(name.charAt(0)) + name.substring(1).toLowerCase();
+        this.capitalizedName = this.sanitizedCapitalizedName();
     }
 
     public static ShadowField of(String name, Type type) {
@@ -54,5 +55,10 @@ public class ShadowFieldImpl implements ShadowField {
         }
 
         return builder;
+    }
+
+    private String sanitizedCapitalizedName() {
+        final String name = this.name.replace(ProxyConstants.PREFIX, "");
+        return Character.toUpperCase(name.charAt(0)) + name.substring(1);
     }
 }

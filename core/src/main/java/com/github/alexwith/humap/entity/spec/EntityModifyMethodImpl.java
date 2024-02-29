@@ -1,4 +1,4 @@
-package com.github.alexwith.humap.proxy.entity;
+package com.github.alexwith.humap.entity.spec;
 
 import com.github.alexwith.humap.entity.spec.EntityField;
 import com.github.alexwith.humap.entity.spec.EntityModifyMethod;

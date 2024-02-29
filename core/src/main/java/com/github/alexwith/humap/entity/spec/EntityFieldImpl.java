@@ -1,7 +1,8 @@
-package com.github.alexwith.humap.proxy.entity;
+package com.github.alexwith.humap.entity.spec;
 
 import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.spec.EntityField;
+import com.github.alexwith.humap.proxy.ProxyConstants;
 import com.github.alexwith.humap.type.ParamedType;
 import com.github.alexwith.humap.type.ParamedTypeImpl;
 import com.github.alexwith.humap.util.SneakyThrows;
@@ -23,7 +24,7 @@ public class EntityFieldImpl implements EntityField {
         this.field = field;
         this.name = field.getName();
         this.type = new ParamedTypeImpl(field);
-        this.isProxyable = false;
+        this.isProxyable = ProxyConstants.PROXYABLE_TYPES.contains(this.type.getRoot());
         this.getterHandle = this.createMethodHandle(MethodHandles.Lookup::unreflectGetter);
         this.setterHandle = this.createMethodHandle(MethodHandles.Lookup::unreflectSetter);
     }

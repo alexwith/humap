@@ -1,5 +1,6 @@
 package com.github.alexwith.humap.proxy;
 
+import com.github.alexwith.humap.dirtytracking.DirtyTracker;
 import com.github.alexwith.humap.type.ParamedType;
 
 public interface ProxyCreationContext {
@@ -14,6 +15,8 @@ public interface ProxyCreationContext {
     Object getOrigin();
 
     ParamedType getType();
+
+    DirtyTracker getDirtyTracker();
 
     Object getId();
 }

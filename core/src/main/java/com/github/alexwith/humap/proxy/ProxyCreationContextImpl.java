@@ -1,19 +1,22 @@
 package com.github.alexwith.humap.proxy;
 
+import com.github.alexwith.humap.dirtytracking.DirtyTracker;
 import com.github.alexwith.humap.type.ParamedType;
 
 public class ProxyCreationContextImpl implements ProxyCreationContext {
     private final Object origin;
     private final ParamedType type;
+    private final DirtyTracker dirtyTracker;
     private final Object id;
 
-    public ProxyCreationContextImpl(Object origin, ParamedType type) {
-        this(origin, type, null);
+    public ProxyCreationContextImpl(Object origin, ParamedType type, DirtyTracker dirtyTracker) {
+        this(origin, type, dirtyTracker, null);
     }
 
-    public ProxyCreationContextImpl(Object origin, ParamedType type, Object id) {
+    public ProxyCreationContextImpl(Object origin, ParamedType type, DirtyTracker dirtyTracker, Object id) {
         this.origin = origin;
         this.type = type;
+        this.dirtyTracker = dirtyTracker;
         this.id = id;
     }
 
@@ -25,6 +28,11 @@ public class ProxyCreationContextImpl implements ProxyCreationContext {
     @Override
     public ParamedType getType() {
         return this.type;
+    }
+
+    @Override
+    public DirtyTracker getDirtyTracker() {
+        return this.dirtyTracker;
     }
 
     @Override

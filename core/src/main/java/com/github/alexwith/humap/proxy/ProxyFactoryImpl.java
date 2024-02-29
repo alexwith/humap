@@ -2,10 +2,11 @@ package com.github.alexwith.humap.proxy;
 
 import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.exception.NonProxyableClassException;
-import com.github.alexwith.humap.proxy.collection.CollectionProxyCreator;
+import com.github.alexwith.humap.proxy.creator.CollectionProxyCreator;
+import com.github.alexwith.humap.proxy.creator.ProxyCreator;
 import com.github.alexwith.humap.proxy.decorator.Decorator;
-import com.github.alexwith.humap.proxy.entity.EntityProxyCreator;
-import com.github.alexwith.humap.proxy.map.MapProxyCreator;
+import com.github.alexwith.humap.proxy.creator.EntityProxyCreator;
+import com.github.alexwith.humap.proxy.creator.MapProxyCreator;
 import com.github.alexwith.humap.type.ParamedType;
 import java.util.Collection;
 import java.util.Map;

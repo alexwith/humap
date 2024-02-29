@@ -1,5 +1,6 @@
-package com.github.alexwith.humap.proxy;
+package com.github.alexwith.humap.proxy.creator;
 
+import com.github.alexwith.humap.proxy.ProxyCreationContext;
 import java.lang.reflect.Constructor;
 
 public interface ProxyCreator<T> {

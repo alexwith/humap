@@ -1,5 +1,7 @@
 package com.github.alexwith.humap.proxy;
 
+import com.github.alexwith.humap.proxy.creator.ProxyCreator;
+
 public interface ProxyFactory {
 
     <T> T proxy(ProxyCreationContext context);

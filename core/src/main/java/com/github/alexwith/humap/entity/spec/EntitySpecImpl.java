@@ -2,8 +2,6 @@ package com.github.alexwith.humap.entity.spec;
 
 import com.github.alexwith.humap.annotation.Modifies;
 import com.github.alexwith.humap.entity.Entity;
-import com.github.alexwith.humap.proxy.entity.EntityFieldImpl;
-import com.github.alexwith.humap.proxy.entity.EntityModifyMethodImpl;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
