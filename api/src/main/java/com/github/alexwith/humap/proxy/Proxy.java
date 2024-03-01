@@ -8,6 +8,10 @@ public interface Proxy {
         return object instanceof Proxy;
     }
 
+    static Proxy asProxy(Object object) {
+        return Proxy.isProxied(object) ? (Proxy) object : null;
+    }
+
     /**
      * Get the root dirty tracker of this proxy
      * <br>

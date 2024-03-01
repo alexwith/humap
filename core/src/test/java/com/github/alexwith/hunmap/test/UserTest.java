@@ -1,7 +1,9 @@
 package com.github.alexwith.hunmap.test;
 
 import com.github.alexwith.humap.Humap;
+import com.github.alexwith.humap.dirtytracking.DirtyTracker;
 import com.github.alexwith.humap.instance.Instances;
+import com.github.alexwith.humap.proxy.Proxy;
 import com.github.alexwith.humap.proxy.ProxyCreationContextImpl;
 import com.github.alexwith.humap.proxy.ProxyFactoryImpl;
 import com.github.alexwith.humap.type.ParamedTypeImpl;
@@ -35,5 +37,9 @@ public class UserTest {
         System.out.println("test: " + user.getName());
 
         user.setName("Bob");
+
+        final Proxy proxy = Proxy.asProxy(user);
+        final DirtyTracker dirtyTracker = proxy.getDirtyTracker();
+        System.out.println(dirtyTracker.getDirty());
     }
 }
