@@ -40,7 +40,7 @@ public class ProxyFactoryImpl implements ProxyFactory {
 
         DynamicType.Builder<T> builder = new ByteBuddy()
             .subclass(clazz)
-            .name("humap.%s$HumapProxy".formatted(clazz.getName()))
+            .name("humap.%$HumapProxy".formatted(clazz.getName()))
             .implement(Proxy.class);
         builder = this.applyDecorators(clazz, builder);
 

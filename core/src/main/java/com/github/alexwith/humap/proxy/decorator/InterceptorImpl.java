@@ -47,7 +47,7 @@ public abstract class InterceptorImpl<T, R> implements Interceptor<T, R> {
     }
 
     protected Object tryProxy(Object object, Proxy parentProxy) {
-        if (!Proxy.isProxyable(object.getClass())) {
+        if (Proxy.isProxied(object) || !Proxy.isProxyable(object.getClass())) {
             return object;
         }
 
