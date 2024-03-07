@@ -1,4 +1,4 @@
-package com.github.alexwith.humap.proxy;
+package com.github.alexwith.humap.proxy.morphing;
 
 public interface Morpher {
 

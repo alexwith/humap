@@ -7,7 +7,7 @@ import com.github.alexwith.humap.proxy.decorator.Decorator;
 import com.github.alexwith.humap.proxy.decorator.ShadowFieldImpl;
 import com.github.alexwith.humap.proxy.interceptor.EntityInterceptor;
 import com.github.alexwith.humap.proxy.interceptor.ToStringInterceptor;
-import java.util.Collection;
+import com.github.alexwith.humap.util.Maps;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,12 +17,7 @@ public class ProxyConstants {
     public static final String DIRTY_TRACKER_FIELD = PREFIX + "dirtyTracker";
     public static final String ENTITY_SPEC_FIELD = PREFIX + "spec";
 
-    public static final Set<Class<?>> PROXYABLE_TYPES = Set.of(
-        Entity.class,
-        Collection.class,
-        Map.class
-    );
-    public static final Map<Class<?>, Set<Decorator>> DECORATORS = Map.of(
+    public static final Map<Class<?>, Set<Decorator>> DECORATORS = Maps.hashMap(
         Object.class, Set.of(
             ShadowFieldImpl.of(DIRTY_TRACKER_FIELD, DirtyTracker.class).withGetter(),
             new ToStringInterceptor()

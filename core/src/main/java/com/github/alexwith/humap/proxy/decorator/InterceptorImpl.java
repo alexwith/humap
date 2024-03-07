@@ -1,7 +1,12 @@
 package com.github.alexwith.humap.proxy.decorator;
 
-import com.github.alexwith.humap.proxy.Morpher;
+import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.proxy.Proxy;
+import com.github.alexwith.humap.proxy.ProxyCreationContext;
+import com.github.alexwith.humap.proxy.ProxyCreationContextImpl;
+import com.github.alexwith.humap.proxy.ProxyFactoryImpl;
+import com.github.alexwith.humap.proxy.morphing.Morpher;
+import com.github.alexwith.humap.type.ParamedTypeImpl;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 import net.bytebuddy.description.method.MethodDescription;
@@ -17,9 +22,11 @@ import net.bytebuddy.matcher.ElementMatcher;
 
 public abstract class InterceptorImpl<T, R> implements Interceptor<T, R> {
     private final ElementMatcher<? super MethodDescription> methodMatcher;
+    private final InterceptionDelegate<T, R> delegate;
 
-    public InterceptorImpl(ElementMatcher<? super MethodDescription> methodMatcher) {
-        this.methodMatcher = methodMatcher;
+    public InterceptorImpl() {
+        this.methodMatcher = this.methodMatcher();
+        this.delegate = new InterceptionDelegate<>(this);
     }
 
     @Override
@@ -29,12 +36,44 @@ public abstract class InterceptorImpl<T, R> implements Interceptor<T, R> {
             .intercept(MethodDelegation
                 .withDefaultConfiguration()
                 .withBinders(Morph.Binder.install(Morpher.class))
-                .to(this)
-            );
+                .to(this.delegate))
+            ;
     }
 
-    @RuntimeType
-    public R localIntercept(@This T object, @Origin Method method, @SuperCall Callable<?> superMethod, @Morph Morpher morpher, @AllArguments Object[] args) {
-        return this.intercept(object, (Proxy) object, method, superMethod, morpher, args);
+    protected void tryProxyArgs(Object[] args, Proxy parentProxy) {
+        for (int i = 0; i < args.length; i++) {
+            args[i] = this.tryProxy(args[i], parentProxy);
+        }
+    }
+
+    protected Object tryProxy(Object object, Proxy parentProxy) {
+        if (!Proxy.isProxyable(object.getClass())) {
+            return object;
+        }
+
+        final ProxyCreationContext context = new ProxyCreationContextImpl(
+            object,
+            new ParamedTypeImpl(object.getClass()),
+            parentProxy.getDirtyTracker()
+        );
+        return Instances.get(ProxyFactoryImpl.class).proxy(context);
+    }
+
+    // This is needed to avoid an issue where bytebuddy can't find the delegation method
+    public static class InterceptionDelegate<T, R> {
+        private final Interceptor<T, R> interceptor;
+
+        public InterceptionDelegate(Interceptor<T, R> interceptor) {
+            this.interceptor = interceptor;
+        }
+
+        @RuntimeType
+        public R onMethod(@This T object,
+                          @Origin Method method,
+                          @SuperCall Callable<?> superMethod,
+                          @Morph Morpher morpher,
+                          @AllArguments Object[] args) {
+            return this.interceptor.intercept(object, (Proxy) object, method, superMethod, morpher, args);
+        }
     }
 }

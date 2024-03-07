@@ -1,15 +1,35 @@
 package com.github.alexwith.humap.proxy;
 
 import com.github.alexwith.humap.dirtytracking.DirtyTracker;
+import com.github.alexwith.humap.entity.Entity;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 public interface Proxy {
+
+    Set<Class<?>> PROXYABLE_TYPES = Set.of(
+        Entity.class,
+        Collection.class,
+        Map.class
+    );
+
+    static Proxy asProxy(Object object) {
+        return Proxy.isProxied(object) ? (Proxy) object : null;
+    }
 
     static boolean isProxied(Object object) {
         return object instanceof Proxy;
     }
 
-    static Proxy asProxy(Object object) {
-        return Proxy.isProxied(object) ? (Proxy) object : null;
+    static boolean isProxyable(Class<?> type) {
+        for (final Class<?> proxyableType : PROXYABLE_TYPES) {
+            if (proxyableType.isAssignableFrom(type)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

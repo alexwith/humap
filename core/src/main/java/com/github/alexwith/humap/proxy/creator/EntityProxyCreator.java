@@ -8,7 +8,6 @@ import com.github.alexwith.humap.proxy.ProxyConstants;
 import com.github.alexwith.humap.proxy.ProxyCreationContext;
 import com.github.alexwith.humap.proxy.decorator.ShadowField;
 import com.github.alexwith.humap.util.SneakyThrows;
-import java.lang.reflect.Field;
 
 public class EntityProxyCreator<T extends Entity> extends ProxyCreatorImpl<T> implements ProxyCreator<T> {
     private final EntitySpec spec;

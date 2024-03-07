@@ -1,16 +1,19 @@
 package com.github.alexwith.humap.proxy.decorator;
 
-import com.github.alexwith.humap.proxy.Morpher;
 import com.github.alexwith.humap.proxy.Proxy;
-import com.github.alexwith.humap.proxy.decorator.Decorator;
+import com.github.alexwith.humap.proxy.morphing.Morpher;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
 public interface Interceptor<T, R> extends Decorator {
 
+    ElementMatcher<? super MethodDescription> methodMatcher();
+
     /**
      * This is called when a method is intercepted
-     * according to some sort of ElementMatcher
+     * according to specified {@link Interceptor#methodMatcher()}
      *
      * @param object      The proxied object
      * @param proxy       The proxy parent of the object

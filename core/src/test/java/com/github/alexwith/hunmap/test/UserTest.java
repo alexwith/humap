@@ -33,10 +33,14 @@ public class UserTest {
             null
         ));
 
-        System.out.println("user: " + user);
-        System.out.println("test: " + user.getName());
+        //System.out.println("user: " + user);
+        //System.out.println("test: " + user.getName());
 
-        user.setName("Bob");
+        //user.setName("Bob");
+
+        //System.out.println("name: " + user.getName());
+
+        System.out.println("user: " + user.getHistory().getClass());
 
         final Proxy proxy = Proxy.asProxy(user);
         final DirtyTracker dirtyTracker = proxy.getDirtyTracker();

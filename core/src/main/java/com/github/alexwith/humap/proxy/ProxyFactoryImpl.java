@@ -3,10 +3,11 @@ package com.github.alexwith.humap.proxy;
 import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.exception.NonProxyableClassException;
 import com.github.alexwith.humap.proxy.creator.CollectionProxyCreator;
-import com.github.alexwith.humap.proxy.creator.ProxyCreator;
-import com.github.alexwith.humap.proxy.decorator.Decorator;
 import com.github.alexwith.humap.proxy.creator.EntityProxyCreator;
 import com.github.alexwith.humap.proxy.creator.MapProxyCreator;
+import com.github.alexwith.humap.proxy.creator.ProxyCreator;
+import com.github.alexwith.humap.proxy.decorator.Decorator;
+import com.github.alexwith.humap.proxy.interceptor.EntityInterceptor;
 import com.github.alexwith.humap.type.ParamedType;
 import java.util.Collection;
 import java.util.Map;
@@ -37,7 +38,10 @@ public class ProxyFactoryImpl implements ProxyFactory {
             return (ProxyCreator<T>) this.proxyCreators.get(clazz);
         }
 
-        DynamicType.Builder<T> builder = new ByteBuddy().subclass(clazz).implement(Proxy.class);
+        DynamicType.Builder<T> builder = new ByteBuddy()
+            .subclass(clazz)
+            .name("humap.%s$HumapProxy".formatted(clazz.getName()))
+            .implement(Proxy.class);
         builder = this.applyDecorators(clazz, builder);
 
         final Class<? extends T> proxiedClass = builder.make().load(CLASS_LOADER).getLoaded();
@@ -77,7 +81,7 @@ public class ProxyFactoryImpl implements ProxyFactory {
     private <T, U extends DynamicType.Builder<T>> U applyDecorators(Class<T> clazz, U builder) {
         for (final Map.Entry<Class<?>, Set<Decorator>> entry : ProxyConstants.DECORATORS.entrySet()) {
             final Class<?> targetClass = entry.getKey();
-            if (!targetClass.isAssignableFrom(clazz)) {
+            if (!targetClass.isAssignableFrom(clazz) || targetClass.equals(EntityInterceptor.class)) {
                 continue;
             }
 
