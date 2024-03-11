@@ -49,7 +49,7 @@ public class ShadowFieldImpl implements ShadowField {
 
         if (this.setter) {
             builder = builder
-                .defineMethod("set".concat(this.capitalizedName), this.type, Visibility.PUBLIC)
+                .defineMethod("set".concat(this.capitalizedName), void.class, Visibility.PUBLIC)
                 .withParameters(this.type)
                 .intercept(FieldAccessor.ofField(this.name));
         }

@@ -27,11 +27,15 @@ public class UserTest {
     public void createTest() {
         //final User user = Entity.create(new User("Alex", 10));
 
-        final User user = Instances.get(ProxyFactoryImpl.class).proxy(new ProxyCreationContextImpl(
-            new User("Alex", 10, new ArrayList<>()),
-            new ParamedTypeImpl(User.class),
-            null
+        final User user = Instances.get(ProxyFactoryImpl.class).proxy(ProxyCreationContextImpl.of((builder) -> builder
+            .origin(new User("Alex", 10, new ArrayList<>()))
+            .type(new ParamedTypeImpl(User.class))
         ));
+
+        user.setInternalIdCounter(30L);
+        System.out.println("whats good: " + user.getInternalIdCounter());
+
+        System.out.println(user.getInternalId());
 
         //System.out.println("user: " + user);
         //System.out.println("test: " + user.getName());

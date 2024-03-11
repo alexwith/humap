@@ -35,4 +35,17 @@ public interface Entity {
     default EntitySpec getSpec() {
         return null;
     }
+
+    /**
+     * Get the internal id of this entity
+     * Mostly used for dirty tracking
+     * <br>
+     * This met hod is implemented in bytecode
+     * at runtime
+     *
+     * @return The internal id of this entity
+     */
+    default long getInternalId() {
+        return -1;
+    }
 }

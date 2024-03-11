@@ -48,7 +48,11 @@ public abstract class ProxyCreatorImpl<T> implements ProxyCreator<T> {
     }
 
     protected Object proxy(Object object, ParamedType type, DirtyTracker dirtyTracker) {
-        final ProxyCreationContext context = new ProxyCreationContextImpl(object, type, dirtyTracker);
+        final ProxyCreationContext context = ProxyCreationContextImpl.of((builder) -> builder
+            .origin(object)
+            .type(type)
+            .dirtyTracker(dirtyTracker)
+        );
         return Instances.get(ProxyFactoryImpl.class).proxy(context);
     }
 }

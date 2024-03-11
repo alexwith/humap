@@ -51,10 +51,10 @@ public abstract class InterceptorImpl<T, R> implements Interceptor<T, R> {
             return object;
         }
 
-        final ProxyCreationContext context = new ProxyCreationContextImpl(
-            object,
-            new ParamedTypeImpl(object.getClass()),
-            parentProxy.getDirtyTracker()
+        final ProxyCreationContext context = ProxyCreationContextImpl.of((builder) -> builder
+            .origin(object)
+            .type(new ParamedTypeImpl(object.getClass()))
+            .dirtyTracker(parentProxy.getDirtyTracker())
         );
         return Instances.get(ProxyFactoryImpl.class).proxy(context);
     }

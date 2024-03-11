@@ -23,6 +23,7 @@ public class EntityProxyCreator<T extends Entity> extends ProxyCreatorImpl<T> im
         this.applyGlobals(entity, context);
 
         ShadowField.set(entity, ProxyConstants.ENTITY_SPEC_FIELD, this.spec);
+        ShadowField.set(entity, ProxyConstants.ENTITY_INTERNAL_ID_FIELD, 10); // TODO implement this
 
         final Entity origin = (Entity) context.getOrigin();
         for (final EntityField field : this.spec.getFields().values()) {
