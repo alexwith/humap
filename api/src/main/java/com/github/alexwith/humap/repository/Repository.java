@@ -2,9 +2,10 @@ package com.github.alexwith.humap.repository;
 
 import com.github.alexwith.humap.entity.IdEntity;
 import com.github.alexwith.humap.instance.Instances;
-import com.github.alexwith.humap.query.Query;
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import org.bson.conversions.Bson;
 
 /**
  * The {@link Repository} is responsible for interfacing
@@ -28,7 +29,7 @@ public interface Repository<K, T extends IdEntity<K>> {
      * @param repositoryClass The wanted repository
      * @param consumer        The consumer the repository should be supplied to
      */
-    static <K, T extends IdEntity<K>, U extends Repository<K, T>> void get(Class<U> repositoryClass, Consumer<U> consumer) {
+    static <K, T extends IdEntity<K>, U extends Repository<K, T>> void consume(Class<U> repositoryClass, Consumer<U> consumer) {
         consumer.accept(Repository.get(repositoryClass));
     }
 
@@ -48,7 +49,11 @@ public interface Repository<K, T extends IdEntity<K>> {
         return (T) null;
     }
 
-    default T where(Query query) {
+    default T findOne(Bson filter) {
         return (T) null;
+    }
+
+    default <U extends Collection<T>> U findAll(Bson filter) {
+        return (U) null;
     }
 }

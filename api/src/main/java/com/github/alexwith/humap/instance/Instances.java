@@ -3,6 +3,7 @@ package com.github.alexwith.humap.instance;
 import com.github.alexwith.humap.exception.NoInstanceException;
 import com.github.alexwith.humap.repository.Repository;
 import jakarta.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +42,12 @@ public class Instances {
     public static void register(@Nonnull Object... instances) {
         for (final Object instance : instances) {
             INSTANCES.put(instance.getClass(), instance);
+
+            // These are the interfaces that this class implements
+            // This way we can get instances using the api classes
+            for (final Class<?> contracts : instance.getClass().getInterfaces()) {
+                INSTANCES.put(contracts, instance);
+            }
         }
     }
 }
