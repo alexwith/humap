@@ -45,8 +45,8 @@ public class Instances {
 
             // These are the interfaces that this class implements
             // This way we can get instances using the api classes
-            for (final Class<?> contracts : instance.getClass().getInterfaces()) {
-                INSTANCES.put(contracts, instance);
+            for (final Class<?> contract : instance.getClass().getInterfaces()) {
+                INSTANCES.put(contract, instance);
             }
         }
     }
