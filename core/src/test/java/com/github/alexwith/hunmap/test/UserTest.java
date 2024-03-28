@@ -6,13 +6,10 @@ import com.github.alexwith.humap.annotation.EntityId;
 import com.github.alexwith.humap.annotation.Modifies;
 import com.github.alexwith.humap.annotation.QuerySignature;
 import com.github.alexwith.humap.dirtytracking.DirtyTracker;
+import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.IdEntity;
-import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.proxy.Proxy;
-import com.github.alexwith.humap.proxy.ProxyCreationContextImpl;
-import com.github.alexwith.humap.proxy.ProxyFactoryImpl;
 import com.github.alexwith.humap.repository.Repository;
-import com.github.alexwith.humap.type.ParamedTypeImpl;
 import com.mongodb.client.model.Filters;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,27 +32,22 @@ public class UserTest {
     @Test
     @Order(1)
     public void createTest() {
-        //final User user = Entity.create(new User("Alex", 10));
-
-        final User user = Instances.get(ProxyFactoryImpl.class).proxy(ProxyCreationContextImpl.of((builder) -> builder
-            .origin(new User("Alex", 10, new ArrayList<>()))
-            .type(new ParamedTypeImpl(User.class))
-        ));
+        final User user = Entity.create(new User("Alex", 10, new ArrayList<>()));
 
         //System.out.println("user: " + user);
         //System.out.println("test: " + user.getName());
 
-        //user.setName("Bob");
+        user.setName("Bob");
 
         //System.out.println("name: " + user.getName());
 
         final Proxy proxy = Proxy.asProxy(user);
         final DirtyTracker dirtyTracker = proxy.getDirtyTracker();
-        System.out.println(dirtyTracker.getDirty());
+        System.out.println("dirty: " + dirtyTracker.getDirty());
 
-        Repository.consume(UserRepository.class, (repository) -> {
+        /*Repository.consume(UserRepository.class, (repository) -> {
             System.out.println("test: " + repository.findByName("Bob"));
-        });
+        });*/
     }
 
     public interface UserRepository extends Repository<UUID, User> {

@@ -21,7 +21,7 @@ public interface Entity {
      */
     static <K, T extends IdEntity<K>> T create(T entity) {
         final ProxyFactory proxyFactory = Instances.get(ProxyFactory.class);
-        return null;
+        return proxyFactory.proxyRootEntity(entity);
     }
 
     /**
