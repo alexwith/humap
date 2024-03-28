@@ -18,5 +18,7 @@ public interface ProxyCreationContext {
 
     DirtyTracker getDirtyTracker();
 
+    boolean isNew();
+
     Object getId();
 }

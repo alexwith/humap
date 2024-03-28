@@ -2,16 +2,12 @@ package com.github.alexwith.humap.proxy;
 
 import com.github.alexwith.humap.dirtytracking.DirtyTracker;
 import com.github.alexwith.humap.entity.Entity;
-import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 public interface Proxy {
 
     Set<Class<?>> PROXYABLE_TYPES = Set.of(
-        Entity.class,
-        Collection.class,
-        Map.class
+        Entity.class
     );
 
     static Proxy asProxy(Object object) {

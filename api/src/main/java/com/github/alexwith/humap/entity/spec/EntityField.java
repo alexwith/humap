@@ -16,7 +16,7 @@ public interface EntityField {
     /**
      * Returns true if this is field of a type
      * that can/should be proxied, e.g.
-     * {@link Entity} or {@link Collection}
+     * {@link Entity}
      *
      * @return If this field's value can/should be proxied
      */

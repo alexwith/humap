@@ -2,7 +2,6 @@ package com.github.alexwith.humap.proxy.interceptor;
 
 import com.github.alexwith.humap.annotation.Modifies;
 import com.github.alexwith.humap.dirtytracking.DirtyTracker;
-import com.github.alexwith.humap.dirtytracking.DirtyType;
 import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.spec.EntityField;
 import com.github.alexwith.humap.entity.spec.EntityModifyMethod;
@@ -32,7 +31,7 @@ public class EntityInterceptor extends InterceptorImpl<Entity, Object> {
         if (entityMethod != null) {
             final EntityField field = entityMethod.getField();
             if (field != null) {
-                dirtyTracker.add(DirtyType.ADD, new String[]{field.getName()});
+                dirtyTracker.add(field.getName());
             }
         }
 

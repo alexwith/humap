@@ -2,6 +2,7 @@ package com.github.alexwith.humap.proxy.creator;
 
 import com.github.alexwith.humap.dirtytracking.DirtyTracker;
 import com.github.alexwith.humap.dirtytracking.DirtyTrackerImpl;
+import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.proxy.ProxyConstants;
 import com.github.alexwith.humap.proxy.ProxyCreationContext;
@@ -37,14 +38,6 @@ public abstract class ProxyCreatorImpl<T> implements ProxyCreator<T> {
     @Override
     public Constructor<? extends T> getConstructor() {
         return this.constructor;
-    }
-
-    protected void applyGlobals(T target, ProxyCreationContext context) {
-        ShadowField.set(
-            target,
-            ProxyConstants.DIRTY_TRACKER_FIELD,
-            Optional.ofNullable(context.getDirtyTracker()).orElse(new DirtyTrackerImpl())
-        );
     }
 
     protected Object proxy(Object object, ParamedType type, DirtyTracker dirtyTracker) {

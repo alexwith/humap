@@ -21,7 +21,7 @@ public interface Entity {
      */
     static <K, T extends IdEntity<K>> T create(T entity) {
         final ProxyFactory proxyFactory = Instances.get(ProxyFactory.class);
-        return proxyFactory.proxyRootEntity(entity);
+        return proxyFactory.proxyRootEntity(entity, true);
     }
 
     /**
@@ -34,18 +34,5 @@ public interface Entity {
      */
     default EntitySpec getSpec() {
         return null;
-    }
-
-    /**
-     * Get the internal id of this entity
-     * Mostly used for dirty tracking
-     * <br>
-     * This met hod is implemented in bytecode
-     * at runtime
-     *
-     * @return The internal id of this entity
-     */
-    default long getInternalId() {
-        return -1;
     }
 }

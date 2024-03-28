@@ -3,6 +3,11 @@ package com.github.alexwith.humap.proxy.creator;
 import com.github.alexwith.humap.proxy.ProxyCreationContext;
 import java.lang.reflect.Constructor;
 
+/**
+ * A generic proxy creator in case
+ * we need multiple types of proxy creators
+ * at some point
+ */
 public interface ProxyCreator<T> {
 
     Class<T> getOriginClass();
