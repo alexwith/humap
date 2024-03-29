@@ -5,13 +5,13 @@ import com.github.alexwith.humap.annotation.Collection;
 import com.github.alexwith.humap.annotation.EntityId;
 import com.github.alexwith.humap.annotation.Modifies;
 import com.github.alexwith.humap.annotation.QuerySignature;
-import com.github.alexwith.humap.dirtytracking.DirtyTracker;
 import com.github.alexwith.humap.entity.IdEntity;
-import com.github.alexwith.humap.proxy.Proxy;
 import com.github.alexwith.humap.repository.Repository;
 import com.mongodb.client.model.Filters;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,18 +31,19 @@ public class UserTest {
     @Test
     @Order(1)
     public void createTest() {
-        final User user = new User("Alex", 10, new ArrayList<>()).proxy();
+        final User user = new User(UUID.randomUUID(), "Alex", 100, new ArrayList<>(), new HashMap<>()).proxy();
 
-        //System.out.println("user: " + user);
-        //System.out.println("test: " + user.getName());
+        user.getHistory().add("hello there");
+        user.getHistory().add("whats gooddd");
+        user.getGrades().put("English", "A+");
 
-        user.setName("Bob");
+        user.save();
 
         //System.out.println("name: " + user.getName());
 
-        final Proxy proxy = Proxy.asProxy(user);
+        /*final Proxy proxy = Proxy.asProxy(user);
         final DirtyTracker dirtyTracker = proxy.getDirtyTracker();
-        System.out.println("dirty: " + dirtyTracker.getDirty());
+        System.out.println("dirty: " + dirtyTracker.getDirty());*/
 
         /*Repository.consume(UserRepository.class, (repository) -> {
             System.out.println("test: " + repository.findByName("Bob"));
@@ -77,10 +78,14 @@ public class UserTest {
 
         private List<String> history;
 
-        public User(String name, int score, List<String> history) {
+        private Map<String, String> grades;
+
+        public User(UUID id, String name, int score, List<String> history, Map<String, String> grades) {
+            this.id = id;
             this.name = name;
             this.score = score;
             this.history = history;
+            this.grades = grades;
         }
 
         protected User() {}
@@ -109,6 +114,10 @@ public class UserTest {
 
         public List<String> getHistory() {
             return this.history;
+        }
+
+        public Map<String, String> getGrades() {
+            return this.grades;
         }
     }
 }

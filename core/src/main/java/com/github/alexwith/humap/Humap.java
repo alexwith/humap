@@ -22,6 +22,7 @@ public class Humap {
 
         Instances.register(
             this.proxyFactory,
+            this.connection,
             this.repositoryManager
         );
     }

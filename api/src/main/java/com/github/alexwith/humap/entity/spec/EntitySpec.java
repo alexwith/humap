@@ -3,6 +3,7 @@ package com.github.alexwith.humap.entity.spec;
 import com.github.alexwith.humap.annotation.Modifies;
 import com.github.alexwith.humap.entity.Entity;
 import java.util.Map;
+import java.util.Optional;
 
 public interface EntitySpec {
 
@@ -40,4 +41,8 @@ public interface EntitySpec {
     EntityField getField(String name);
 
     EntityModifyMethod getModifyMethod(String name);
+
+    Optional<String> getCollection();
+
+    EntityField getIdField();
 }

@@ -1,5 +1,7 @@
 package com.github.alexwith.humap.entity.spec;
 
+import com.github.alexwith.humap.annotation.Collection;
+import com.github.alexwith.humap.annotation.EntityId;
 import com.github.alexwith.humap.annotation.Modifies;
 import com.github.alexwith.humap.entity.Entity;
 import java.lang.reflect.Field;
@@ -8,15 +10,19 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class EntitySpecImpl implements EntitySpec {
     private final Class<? extends Entity> originClass;
-    // linked so it's easier to view through Entity#toString
     private final Map<String, EntityField> fields = new LinkedHashMap<>();
     private final Map<String, EntityModifyMethod> modifyMethods = new HashMap<>();
+    private final String collection;
+
+    private EntityField idField;
 
     public EntitySpecImpl(Class<? extends Entity> originClass) {
         this.originClass = originClass;
+        this.collection = this.tryGetCollection();
 
         this.populateFields();
         this.populateModifyMethods();
@@ -47,6 +53,15 @@ public class EntitySpecImpl implements EntitySpec {
         return this.modifyMethods.get(name.toLowerCase());
     }
 
+    @Override
+    public Optional<String> getCollection() {
+        return Optional.ofNullable(this.collection);
+    }
+
+    public EntityField getIdField() {
+        return this.idField;
+    }
+
     private void populateFields() {
         for (final Field field : this.originClass.getDeclaredFields()) {
             if (Modifier.isStatic(field.getModifiers())) {
@@ -57,6 +72,10 @@ public class EntitySpecImpl implements EntitySpec {
 
             final EntityField entityField = new EntityFieldImpl(field);
             this.fields.put(entityField.getName().toLowerCase(), entityField);
+
+            if (field.isAnnotationPresent(EntityId.class)) {
+                this.idField = entityField;
+            }
         }
     }
 
@@ -75,5 +94,10 @@ public class EntitySpecImpl implements EntitySpec {
             final EntityModifyMethod proxyMethod = new EntityModifyMethodImpl(method, entityField);
             this.modifyMethods.put(proxyMethod.getName().toLowerCase(), proxyMethod);
         }
+    }
+
+    private String tryGetCollection() {
+        final Collection collection = this.originClass.getAnnotation(Collection.class);
+        return collection.value();
     }
 }
