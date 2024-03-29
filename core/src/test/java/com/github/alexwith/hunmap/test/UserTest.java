@@ -6,7 +6,6 @@ import com.github.alexwith.humap.annotation.EntityId;
 import com.github.alexwith.humap.annotation.Modifies;
 import com.github.alexwith.humap.annotation.QuerySignature;
 import com.github.alexwith.humap.dirtytracking.DirtyTracker;
-import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.IdEntity;
 import com.github.alexwith.humap.proxy.Proxy;
 import com.github.alexwith.humap.repository.Repository;
@@ -32,7 +31,7 @@ public class UserTest {
     @Test
     @Order(1)
     public void createTest() {
-        final User user = Entity.create(new User("Alex", 10, new ArrayList<>()));
+        final User user = new User("Alex", 10, new ArrayList<>()).proxy();
 
         //System.out.println("user: " + user);
         //System.out.println("test: " + user.getName());

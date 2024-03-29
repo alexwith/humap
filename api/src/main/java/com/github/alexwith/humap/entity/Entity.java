@@ -19,9 +19,21 @@ public interface Entity {
      * @param entity The entity to proxy
      * @return An instance of the proxied entity
      */
-    static <K, T extends IdEntity<K>> T create(T entity) {
+    static <K, T extends IdEntity<K>> T proxy(T entity) {
         final ProxyFactory proxyFactory = Instances.get(ProxyFactory.class);
         return proxyFactory.proxyRootEntity(entity, true);
+    }
+
+    /**
+     * Calls {@link Entity#proxy(IdEntity)} with the
+     * current entity, these are just different for
+     * preference’s sake
+     *
+     * @return An instance of the proxied entity
+     */
+    @SuppressWarnings("unchecked")
+    default <K, T extends IdEntity<K>> T proxy() {
+        return Entity.proxy((T) this);
     }
 
     /**
