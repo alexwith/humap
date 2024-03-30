@@ -98,6 +98,6 @@ public class EntitySpecImpl implements EntitySpec {
 
     private String tryGetCollection() {
         final Collection collection = this.originClass.getAnnotation(Collection.class);
-        return collection.value();
+        return collection == null ? null : collection.value();
     }
 }

@@ -33,6 +33,7 @@ public class ProxyFactoryImpl implements ProxyFactory {
         return this.proxy(ProxyCreationContextImpl.of((builder) -> builder
             .origin(unproxiedEntity)
             .type(new ParamedTypeImpl(unproxiedEntity.getClass()))
+            .path("")
             .isNew(isNew)
         ));
     }

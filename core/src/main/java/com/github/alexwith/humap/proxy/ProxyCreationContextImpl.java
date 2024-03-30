@@ -9,13 +9,15 @@ public class ProxyCreationContextImpl implements ProxyCreationContext {
     private final ParamedType type;
     private final DirtyTracker dirtyTracker;
     private final boolean isNew;
+    private final String path;
     private final Object id;
 
-    private ProxyCreationContextImpl(Object origin, ParamedType type, DirtyTracker dirtyTracker, boolean isNew, Object id) {
+    private ProxyCreationContextImpl(Object origin, ParamedType type, DirtyTracker dirtyTracker, boolean isNew, String path, Object id) {
         this.origin = origin;
         this.type = type;
         this.dirtyTracker = dirtyTracker;
         this.isNew = isNew;
+        this.path = path;
         this.id = id;
     }
 
@@ -48,6 +50,11 @@ public class ProxyCreationContextImpl implements ProxyCreationContext {
     }
 
     @Override
+    public String getPath() {
+        return this.path;
+    }
+
+    @Override
     public Object getId() {
         return this.id;
     }
@@ -57,6 +64,7 @@ public class ProxyCreationContextImpl implements ProxyCreationContext {
         private ParamedType type;
         private DirtyTracker dirtyTracker;
         private boolean isNew;
+        private String path;
         private Object id;
 
         public Builder origin(Object origin) {
@@ -79,13 +87,18 @@ public class ProxyCreationContextImpl implements ProxyCreationContext {
             return this;
         }
 
+        public Builder path(String path) {
+            this.path = path;
+            return this;
+        }
+
         public Builder id(Object id) {
             this.id = id;
             return this;
         }
 
         public ProxyCreationContext build() {
-            return new ProxyCreationContextImpl(this.origin, this.type, this.dirtyTracker, this.isNew, this.id);
+            return new ProxyCreationContextImpl(this.origin, this.type, this.dirtyTracker, this.isNew, this.path, this.id);
         }
     }
 }

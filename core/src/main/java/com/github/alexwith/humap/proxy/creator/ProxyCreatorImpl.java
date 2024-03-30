@@ -1,18 +1,13 @@
 package com.github.alexwith.humap.proxy.creator;
 
 import com.github.alexwith.humap.dirtytracking.DirtyTracker;
-import com.github.alexwith.humap.dirtytracking.DirtyTrackerImpl;
-import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.instance.Instances;
-import com.github.alexwith.humap.proxy.ProxyConstants;
 import com.github.alexwith.humap.proxy.ProxyCreationContext;
 import com.github.alexwith.humap.proxy.ProxyCreationContextImpl;
 import com.github.alexwith.humap.proxy.ProxyFactoryImpl;
-import com.github.alexwith.humap.proxy.decorator.ShadowField;
 import com.github.alexwith.humap.type.ParamedType;
 import com.github.alexwith.humap.util.SneakyThrows;
 import java.lang.reflect.Constructor;
-import java.util.Optional;
 
 public abstract class ProxyCreatorImpl<T> implements ProxyCreator<T> {
     protected final Class<T> originClass;
@@ -40,11 +35,12 @@ public abstract class ProxyCreatorImpl<T> implements ProxyCreator<T> {
         return this.constructor;
     }
 
-    protected Object proxy(Object object, ParamedType type, DirtyTracker dirtyTracker) {
+    protected Object proxy(Object object, ParamedType type, DirtyTracker dirtyTracker, String path) {
         final ProxyCreationContext context = ProxyCreationContextImpl.of((builder) -> builder
             .origin(object)
             .type(type)
             .dirtyTracker(dirtyTracker)
+            .path(path)
         );
         return Instances.get(ProxyFactoryImpl.class).proxy(context);
     }

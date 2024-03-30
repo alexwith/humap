@@ -25,14 +25,20 @@ public class EntityProxyCreator<T extends Entity> extends ProxyCreatorImpl<T> {
         final T entity = SneakyThrows.supply(this.constructor::newInstance);
 
         final DirtyTracker dirtyTracker = Optional.ofNullable(context.getDirtyTracker()).orElse(new DirtyTrackerImpl(context.isNew()));
-        ShadowField.set(entity, ProxyConstants.DIRTY_TRACKER_FIELD, dirtyTracker);
+        ShadowField.set(entity, ProxyConstants.PROXY_DIRTY_TRACKER_FIELD, dirtyTracker);
         ShadowField.set(entity, ProxyConstants.ENTITY_SPEC_FIELD, this.spec);
+        ShadowField.set(entity, ProxyConstants.PROXY_PATH_FIELD, context.getPath());
 
         final Entity origin = (Entity) context.getOrigin();
         for (final EntityField field : this.spec.getFields().values()) {
             Object value = field.getValue(origin);
+            if (value == null) {
+                continue;
+            }
+
             if (field.isProxyable()) {
-                value = this.proxy(value, field.getType(), context.getDirtyTracker());
+                final String path = context.getPath().isEmpty() ? field.getName() : context.getPath().concat(field.getName());
+                value = this.proxy(value, field.getType(), context.getDirtyTracker(), path);
             }
 
             field.setValue(entity, value);

@@ -27,7 +27,17 @@ public class DirtyTrackerImpl implements DirtyTracker {
     }
 
     @Override
+    public boolean isDirty(String path) {
+        return this.entries.contains(path);
+    }
+
+    @Override
     public boolean isAllDirty() {
         return this.allDirty;
+    }
+
+    @Override
+    public void setAllDirty(boolean allDirty) {
+        this.allDirty = allDirty;
     }
 }

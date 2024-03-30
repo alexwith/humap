@@ -1,5 +1,6 @@
 package com.github.alexwith.humap.proxy.decorator;
 
+import com.github.alexwith.humap.entity.spec.EntityField;
 import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.proxy.Proxy;
 import com.github.alexwith.humap.proxy.ProxyCreationContext;
@@ -40,13 +41,13 @@ public abstract class InterceptorImpl<T, R> implements Interceptor<T, R> {
             ;
     }
 
-    protected void tryProxyArgs(Object[] args, Proxy parentProxy) {
+    protected void tryProxyArgs(Object[] args, Proxy parentProxy, EntityField field) {
         for (int i = 0; i < args.length; i++) {
-            args[i] = this.tryProxy(args[i], parentProxy);
+            args[i] = this.tryProxy(args[i], parentProxy, field);
         }
     }
 
-    protected Object tryProxy(Object object, Proxy parentProxy) {
+    protected Object tryProxy(Object object, Proxy parentProxy, EntityField field) {
         if (Proxy.isProxied(object) || !Proxy.isProxyable(object.getClass())) {
             return object;
         }
@@ -55,6 +56,7 @@ public abstract class InterceptorImpl<T, R> implements Interceptor<T, R> {
             .origin(object)
             .type(new ParamedTypeImpl(object.getClass()))
             .dirtyTracker(parentProxy.getDirtyTracker())
+            .path(parentProxy.appendAbsolutePath(field.getName()))
         );
         return Instances.get(ProxyFactoryImpl.class).proxy(context);
     }

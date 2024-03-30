@@ -39,4 +39,13 @@ public interface Proxy {
     default DirtyTracker getDirtyTracker() {
         return null;
     }
+
+    default String getAbsolutePath() {
+        return null;
+    }
+
+    default String appendAbsolutePath(String path) {
+        final String absolutePath = this.getAbsolutePath();
+        return absolutePath.isEmpty() ? path : absolutePath + "." + path;
+    }
 }

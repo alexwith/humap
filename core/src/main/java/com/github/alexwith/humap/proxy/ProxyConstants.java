@@ -11,12 +11,14 @@ import java.util.Set;
 public class ProxyConstants {
 
     public static final String PREFIX = "humap$";
-    public static final String DIRTY_TRACKER_FIELD = PREFIX + "dirtyTracker";
+    public static final String PROXY_DIRTY_TRACKER_FIELD = PREFIX + "dirtyTracker";
+    public static final String PROXY_PATH_FIELD = PREFIX + "absolutePath";
     public static final String ENTITY_SPEC_FIELD = PREFIX + "spec";
 
     public static final Set<Decorator> DECORATORS = Set.of(
+        ShadowFieldImpl.of(PROXY_DIRTY_TRACKER_FIELD, DirtyTracker.class).withGetter(),
+        ShadowFieldImpl.of(PROXY_PATH_FIELD, String.class).withGetter(),
         ShadowFieldImpl.of(ENTITY_SPEC_FIELD, EntitySpec.class).withGetter(),
-        ShadowFieldImpl.of(DIRTY_TRACKER_FIELD, DirtyTracker.class).withGetter(),
         new ToStringInterceptor(),
         new EntityInterceptor()
     );

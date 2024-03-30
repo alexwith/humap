@@ -1,8 +1,10 @@
 package com.github.alexwith.humap.mongo.codec;
 
+import com.github.alexwith.humap.dirtytracking.DirtyTracker;
 import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.spec.EntityField;
 import com.github.alexwith.humap.entity.spec.EntitySpec;
+import com.github.alexwith.humap.proxy.Proxy;
 import org.bson.BsonReader;
 import org.bson.BsonWriter;
 import org.bson.codecs.Codec;
@@ -27,6 +29,8 @@ public class EntityCodec implements Codec<Entity> {
     @SuppressWarnings("unchecked")
     public void encode(BsonWriter writer, Entity entity, EncoderContext context) {
         final EntitySpec spec = entity.getSpec();
+        final Proxy proxy = Proxy.asProxy(entity);
+        final DirtyTracker dirtyTracker = proxy.getDirtyTracker();
 
         writer.writeStartDocument();
 
@@ -35,7 +39,12 @@ public class EntityCodec implements Codec<Entity> {
                 continue;
             }
 
-            writer.writeName(field.getName());
+            final String name = field.getName();
+            if (!dirtyTracker.isAllDirty() && !field.isProxyable() && !dirtyTracker.isDirty(proxy.appendAbsolutePath(name))) {
+                continue;
+            }
+
+            writer.writeName(name);
 
             final Object value = field.getValue(entity);
             final Encoder<Object> encoder = (Encoder<Object>) this.registry.get(value.getClass());

@@ -9,6 +9,7 @@ import com.github.alexwith.humap.entity.spec.EntitySpec;
 import com.github.alexwith.humap.proxy.Proxy;
 import com.github.alexwith.humap.proxy.decorator.InterceptorImpl;
 import com.github.alexwith.humap.proxy.morphing.Morpher;
+import com.github.alexwith.humap.util.SneakyThrows;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 import net.bytebuddy.description.method.MethodDescription;
@@ -28,14 +29,18 @@ public class EntityInterceptor extends InterceptorImpl<Entity, Object> {
         final DirtyTracker dirtyTracker = proxy.getDirtyTracker();
 
         final EntityModifyMethod entityMethod = spec.getModifyMethod(method.getName());
-        if (entityMethod != null) {
-            final EntityField field = entityMethod.getField();
-            if (field != null) {
-                dirtyTracker.add(field.getName());
-            }
+        if (entityMethod == null) {
+            return SneakyThrows.supply(superMethod::call);
         }
 
-        this.tryProxyArgs(args, proxy);
+        final EntityField field = entityMethod.getField();
+        if (field == null) {
+            return SneakyThrows.supply(superMethod::call);
+        }
+
+        dirtyTracker.add(proxy.appendAbsolutePath(field.getName()));
+
+        this.tryProxyArgs(args, proxy, field);
 
         return morpher.morph(args);
     }

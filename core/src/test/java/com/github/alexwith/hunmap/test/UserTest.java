@@ -5,6 +5,7 @@ import com.github.alexwith.humap.annotation.Collection;
 import com.github.alexwith.humap.annotation.EntityId;
 import com.github.alexwith.humap.annotation.Modifies;
 import com.github.alexwith.humap.annotation.QuerySignature;
+import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.IdEntity;
 import com.github.alexwith.humap.repository.Repository;
 import com.mongodb.client.model.Filters;
@@ -31,19 +32,15 @@ public class UserTest {
     @Test
     @Order(1)
     public void createTest() {
-        final User user = new User(UUID.randomUUID(), "Alex", 100, new ArrayList<>(), new HashMap<>()).proxy();
-
+        final User user = new User(UUID.randomUUID(), "Alex", 100, new ArrayList<>(), new HashMap<>(), null).proxy();
         user.getHistory().add("hello there");
         user.getHistory().add("whats gooddd");
         user.getGrades().put("English", "A+");
-
+        user.setPet(new Pet("Snoop Dog", 5));
         user.save();
 
-        //System.out.println("name: " + user.getName());
-
-        /*final Proxy proxy = Proxy.asProxy(user);
-        final DirtyTracker dirtyTracker = proxy.getDirtyTracker();
-        System.out.println("dirty: " + dirtyTracker.getDirty());*/
+        user.getPet().modifyAge((value) -> value + 1);
+        user.save();
 
         /*Repository.consume(UserRepository.class, (repository) -> {
             System.out.println("test: " + repository.findByName("Bob"));
@@ -68,24 +65,20 @@ public class UserTest {
 
     @Collection("user")
     public static class User implements IdEntity<UUID> {
-
-        @EntityId
-        private UUID id;
-
+        private @EntityId UUID id;
         private String name;
-
         private int score;
-
         private List<String> history;
-
         private Map<String, String> grades;
+        private Pet pet;
 
-        public User(UUID id, String name, int score, List<String> history, Map<String, String> grades) {
+        public User(UUID id, String name, int score, List<String> history, Map<String, String> grades, Pet pet) {
             this.id = id;
             this.name = name;
             this.score = score;
             this.history = history;
             this.grades = grades;
+            this.pet = pet;
         }
 
         protected User() {}
@@ -118,6 +111,39 @@ public class UserTest {
 
         public Map<String, String> getGrades() {
             return this.grades;
+        }
+
+        public Pet getPet() {
+            return this.pet;
+        }
+
+        public void setPet(Pet pet) {
+            this.pet = pet;
+        }
+    }
+
+    public static class Pet implements Entity {
+        private String name;
+        private int age;
+
+        public Pet(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+
+        protected Pet() {}
+
+        public String getName() {
+            return this.name;
+        }
+
+        public int getAge() {
+            return this.age;
+        }
+
+        @Modifies("age")
+        public void modifyAge(UnaryOperator<Integer> modifier) {
+            this.age = modifier.apply(this.age);
         }
     }
 }

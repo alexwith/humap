@@ -15,6 +15,8 @@ public interface DirtyTracker {
      */
     void add(String path);
 
+    boolean isDirty(String path);
+
     /**
      * If the entire entity is dirty,
      * this would be if the entity a new one
@@ -22,4 +24,6 @@ public interface DirtyTracker {
      * @return If the entire entity is dirty
      */
     boolean isAllDirty();
+
+    void setAllDirty(boolean allDirty);
 }

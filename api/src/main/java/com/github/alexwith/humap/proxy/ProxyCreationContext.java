@@ -20,5 +20,7 @@ public interface ProxyCreationContext {
 
     boolean isNew();
 
+    String getPath();
+
     Object getId();
 }

@@ -1,21 +1,28 @@
 package com.github.alexwith.humap.mongo;
 
 import com.github.alexwith.humap.Humap;
+import com.github.alexwith.humap.dirtytracking.DirtyTracker;
 import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.IdEntity;
 import com.github.alexwith.humap.entity.spec.EntitySpec;
 import com.github.alexwith.humap.exception.NoCollectionSpecifiedException;
 import com.github.alexwith.humap.mongo.codec.EntityCodecProvider;
+import com.github.alexwith.humap.proxy.Proxy;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.bson.BsonDocument;
 import org.bson.BsonDocumentWrapper;
-import org.bson.BsonValue;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodec;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -25,6 +32,9 @@ import org.bson.conversions.Bson;
 public class MongoEntityManagerImpl implements MongoEntityManager {
     private final EntitySpec spec;
     private final MongoCollection<Entity> collection;
+    private final Cache<IdEntity<?>, Lock> savingLocks = Caffeine.newBuilder()
+        .expireAfterAccess(5, TimeUnit.SECONDS)
+        .build();
 
     private static final CodecRegistry CODEC_REGISTRY = CodecRegistries.fromRegistries(
         CodecRegistries.fromProviders(new EntityCodecProvider()),
@@ -40,20 +50,41 @@ public class MongoEntityManagerImpl implements MongoEntityManager {
 
     @Override
     public void save(IdEntity<?> entity) {
-        final BsonDocument document = BsonDocumentWrapper.asBsonDocument(entity, CODEC_REGISTRY);
+        final Lock savingLock = this.savingLocks.get(entity, ($) -> new ReentrantLock());
+        savingLock.lock();
+        try {
+            final BsonDocument document = BsonDocumentWrapper.asBsonDocument(entity, CODEC_REGISTRY);
 
-        int updateIndex = 0;
-        final Bson[] updates = new Bson[document.size()];
-        for (final Map.Entry<String, BsonValue> entry : document.entrySet()) {
-            updates[updateIndex++] = Updates.set(entry.getKey(), entry.getValue());
+            final List<Bson> updates = new ArrayList<>();
+            this.documentToUpdates(updates, "", document);
+
+            if (updates.isEmpty()) {
+                return;
+            }
+
+            final Bson idQuery = this.createIdQuery(entity);
+            this.collection.updateOne(idQuery, Updates.combine(updates), UPDATE_OPTIONS);
+
+            final DirtyTracker dirtyTracker = Proxy.asProxy(entity).getDirtyTracker();
+            dirtyTracker.setAllDirty(false);
+        } finally {
+            savingLock.unlock();
         }
-
-        final Bson idQuery = this.createIdQuery(entity);
-        this.collection.updateOne(idQuery, Updates.combine(updates), UPDATE_OPTIONS);
     }
 
     private Bson createIdQuery(IdEntity<?> entity) {
         return Filters.eq("_id", entity.getId());
+    }
+
+    private void documentToUpdates(List<Bson> updates, String prefix, BsonDocument document) {
+        document.forEach((field, value) -> {
+            if (value instanceof final BsonDocument innerDocument) {
+                this.documentToUpdates(updates, field + ".", innerDocument);
+                return;
+            }
+
+            updates.add(Updates.set(prefix + field, value));
+        });
     }
 
     private MongoCollection<Entity> initCollection() {
