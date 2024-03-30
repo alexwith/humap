@@ -22,13 +22,14 @@ public class EntityCodec implements Codec<Entity> {
 
     @Override
     public Entity decode(BsonReader reader, DecoderContext context) {
+
         return null;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void encode(BsonWriter writer, Entity entity, EncoderContext context) {
-        final EntitySpec spec = entity.getSpec();
+        final EntitySpec spec = EntitySpec.from(entity);
         final Proxy proxy = Proxy.asProxy(entity);
         final DirtyTracker dirtyTracker = proxy.getDirtyTracker();
 

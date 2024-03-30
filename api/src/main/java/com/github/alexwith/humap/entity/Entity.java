@@ -1,6 +1,5 @@
 package com.github.alexwith.humap.entity;
 
-import com.github.alexwith.humap.entity.spec.EntitySpec;
 import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.proxy.ProxyFactory;
 
@@ -34,17 +33,5 @@ public interface Entity {
     @SuppressWarnings("unchecked")
     default <K, T extends IdEntity<K>> T proxy() {
         return Entity.proxy((T) this);
-    }
-
-    /**
-     * Get the spec of this entity
-     * <br>
-     * This method is implemented in bytecode
-     * at runtime
-     *
-     * @return The spec of this entity
-     */
-    default EntitySpec getSpec() {
-        return null;
     }
 }

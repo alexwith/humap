@@ -32,7 +32,7 @@ public class UserTest {
     @Test
     @Order(1)
     public void createTest() {
-        final User user = new User(UUID.randomUUID(), "Alex", 100, new ArrayList<>(), new HashMap<>(), null).proxy();
+        /*final User user = new User(UUID.randomUUID(), "Alex", 100, new ArrayList<>(), new HashMap<>(), null).proxy();
         user.getHistory().add("hello there");
         user.getHistory().add("whats gooddd");
         user.getGrades().put("English", "A+");
@@ -40,11 +40,12 @@ public class UserTest {
         user.save();
 
         user.getPet().modifyAge((value) -> value + 1);
-        user.save();
+        user.save();*/
 
-        /*Repository.consume(UserRepository.class, (repository) -> {
-            System.out.println("test: " + repository.findByName("Bob"));
-        });*/
+        Repository.consume(UserRepository.class, (repository) -> {
+            final User user = repository.findById(UUID.fromString("d6a1df57-582b-435d-815a-b23a7790e016"));
+            System.out.println("test: " + user);
+        });
     }
 
     public interface UserRepository extends Repository<UUID, User> {

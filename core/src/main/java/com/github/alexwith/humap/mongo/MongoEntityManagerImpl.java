@@ -49,6 +49,14 @@ public class MongoEntityManagerImpl implements MongoEntityManager {
     }
 
     @Override
+    public IdEntity<?> findOne(Bson query) {
+        System.out.println("find one for " + this.spec.getOriginClass());
+        this.collection.find();
+
+        return null;
+    }
+
+    @Override
     public void save(IdEntity<?> entity) {
         final Lock savingLock = this.savingLocks.get(entity, ($) -> new ReentrantLock());
         savingLock.lock();
@@ -62,7 +70,7 @@ public class MongoEntityManagerImpl implements MongoEntityManager {
                 return;
             }
 
-            final Bson idQuery = this.createIdQuery(entity);
+            final Bson idQuery = Filters.eq("_id", entity.getId());
             this.collection.updateOne(idQuery, Updates.combine(updates), UPDATE_OPTIONS);
 
             final DirtyTracker dirtyTracker = Proxy.asProxy(entity).getDirtyTracker();
@@ -70,10 +78,6 @@ public class MongoEntityManagerImpl implements MongoEntityManager {
         } finally {
             savingLock.unlock();
         }
-    }
-
-    private Bson createIdQuery(IdEntity<?> entity) {
-        return Filters.eq("_id", entity.getId());
     }
 
     private void documentToUpdates(List<Bson> updates, String prefix, BsonDocument document) {

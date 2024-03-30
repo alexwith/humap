@@ -1,10 +1,14 @@
 package com.github.alexwith.humap.repository;
 
 import com.github.alexwith.humap.entity.IdEntity;
+import com.github.alexwith.humap.entity.spec.EntitySpec;
+import com.github.alexwith.humap.instance.Instances;
+import com.github.alexwith.humap.proxy.ProxyFactory;
 import com.github.alexwith.humap.repository.query.Query;
 import com.github.alexwith.humap.repository.query.QueryImpl;
 import com.github.alexwith.humap.repository.query.QueryInterceptorImpl;
 import com.github.alexwith.humap.util.SneakyThrows;
+import com.github.alexwith.humap.util.TypeResolver;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,9 +31,15 @@ public class RepositoryManagerImpl implements RepositoryManager {
         return (U) this.repositories.computeIfAbsent(repositoryClass, ($) -> this.createRepository(repositoryClass));
     }
 
+    @SuppressWarnings("unchecked")
     private <K, T extends IdEntity<K>, U extends Repository<K, T>> U createRepository(Class<U> clazz) {
-        DynamicType.Builder<U> builder = new ByteBuddy()
-            .subclass(clazz);
+        final Class<T> entityClass = (Class<T>) TypeResolver.resolveRawArguments(Repository.class, clazz)[1];
+        if (EntitySpec.from(entityClass) == null) {
+            final ProxyFactory proxyFactory = Instances.get(ProxyFactory.class);
+            proxyFactory.getProxyCreator(entityClass); // inits the entity spec
+        }
+
+        DynamicType.Builder<U> builder = new ByteBuddy().subclass(clazz);
 
         final Set<QueryInterceptorImpl<K, T>> queryInterceptors = new HashSet<>();
         for (final Map.Entry<Method, Query> entry : this.parseQueries(clazz).entrySet()) {

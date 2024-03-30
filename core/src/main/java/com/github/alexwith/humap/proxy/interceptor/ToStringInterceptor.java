@@ -20,12 +20,12 @@ public class ToStringInterceptor extends InterceptorImpl<Entity, String> {
     }
 
     @Override
-    public String intercept(Entity object, Proxy proxy, Method method, Callable<?> superMethod, Morpher morpher, Object[] args) {
-        final EntitySpec spec = object.getSpec();
+    public String intercept(Entity entity, Proxy proxy, Method method, Callable<?> superMethod, Morpher morpher, Object[] args) {
+        final EntitySpec spec = EntitySpec.from(entity);
 
         final StringBuilder builder = new StringBuilder("%s={".formatted(spec.getOriginClass()));
         for (final EntityField field : spec.getFields().values()) {
-            final Object value = field.getValue(object);
+            final Object value = field.getValue(entity);
             builder.append(field.getName())
                 .append(": ")
                 .append(value)

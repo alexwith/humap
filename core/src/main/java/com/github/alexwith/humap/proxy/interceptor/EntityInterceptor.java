@@ -25,10 +25,7 @@ public class EntityInterceptor extends InterceptorImpl<Entity, Object> {
 
     @Override
     public Object intercept(Entity entity, Proxy proxy, Method method, Callable<?> superMethod, Morpher morpher, Object[] args) {
-        final EntitySpec spec = entity.getSpec();
-        final DirtyTracker dirtyTracker = proxy.getDirtyTracker();
-
-        final EntityModifyMethod entityMethod = spec.getModifyMethod(method.getName());
+        final EntityModifyMethod entityMethod = EntitySpec.from(entity).getModifyMethod(method.getName());
         if (entityMethod == null) {
             return SneakyThrows.supply(superMethod::call);
         }
@@ -38,6 +35,7 @@ public class EntityInterceptor extends InterceptorImpl<Entity, Object> {
             return SneakyThrows.supply(superMethod::call);
         }
 
+        final DirtyTracker dirtyTracker = proxy.getDirtyTracker();
         dirtyTracker.add(proxy.appendAbsolutePath(field.getName()));
 
         this.tryProxyArgs(args, proxy, field);

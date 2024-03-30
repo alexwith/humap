@@ -8,9 +8,10 @@ public interface IdEntity<K> extends Entity {
 
     K getId();
 
+    @SuppressWarnings("unchecked")
     default void save() {
         final MongoConnection connection = Instances.get(MongoConnection.class);
-        final MongoEntityManager manager = connection.getEntityManager(this);
+        final MongoEntityManager manager = connection.getEntityManager(this.getClass());
         manager.save(this);
     }
 }

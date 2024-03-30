@@ -1,6 +1,7 @@
 package com.github.alexwith.humap.mongo;
 
 import com.github.alexwith.humap.entity.IdEntity;
+import com.github.alexwith.humap.entity.spec.EntitySpec;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
@@ -14,8 +15,8 @@ public class MongoConnectionImpl implements MongoConnection {
     private MongoDatabase database;
 
     @Override
-    public <K, T extends IdEntity<K>> MongoEntityManager getEntityManager(T entity) {
-        return this.entityManagers.computeIfAbsent(entity.getClass(), ($) -> new MongoEntityManagerImpl(entity.getSpec()));
+    public <K, T extends IdEntity<K>> MongoEntityManager getEntityManager(Class<T> clazz) {
+        return this.entityManagers.computeIfAbsent(clazz, ($) -> new MongoEntityManagerImpl(EntitySpec.from(clazz)));
     }
 
     @Override

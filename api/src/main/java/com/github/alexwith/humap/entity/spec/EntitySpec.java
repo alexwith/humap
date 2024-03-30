@@ -2,10 +2,19 @@ package com.github.alexwith.humap.entity.spec;
 
 import com.github.alexwith.humap.annotation.Modifies;
 import com.github.alexwith.humap.entity.Entity;
+import com.github.alexwith.humap.instance.Instances;
 import java.util.Map;
 import java.util.Optional;
 
 public interface EntitySpec {
+
+    static EntitySpec from(Entity entity) {
+        return EntitySpec.from(entity.getClass());
+    }
+
+    static EntitySpec from(Class<? extends Entity> entityClass) {
+        return Instances.get(EntitySpecManager.class).get(entityClass);
+    }
 
     /**
      * The origin class refers to the
