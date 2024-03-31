@@ -1,4 +1,4 @@
-package com.github.alexwith.hunmap.test;
+package com.github.alexwith.humap.test;
 
 import com.github.alexwith.humap.Humap;
 import com.github.alexwith.humap.annotation.Collection;

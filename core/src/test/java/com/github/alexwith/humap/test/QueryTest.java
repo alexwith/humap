@@ -1,4 +1,4 @@
-package com.github.alexwith.hunmap.test;
+package com.github.alexwith.humap.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
