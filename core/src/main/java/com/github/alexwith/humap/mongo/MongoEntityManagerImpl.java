@@ -29,10 +29,11 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 
-public class MongoEntityManagerImpl implements MongoEntityManager {
+public class MongoEntityManagerImpl<K, T extends IdEntity<K>> implements MongoEntityManager<K, T> {
+    private final Class<T> entityClass;
     private final EntitySpec spec;
-    private final MongoCollection<Entity> collection;
-    private final Cache<IdEntity<?>, Lock> savingLocks = Caffeine.newBuilder()
+    private final MongoCollection<T> collection;
+    private final Cache<T, Lock> savingLocks = Caffeine.newBuilder()
         .expireAfterAccess(5, TimeUnit.SECONDS)
         .build();
 
@@ -43,21 +44,21 @@ public class MongoEntityManagerImpl implements MongoEntityManager {
     );
     private static final UpdateOptions UPDATE_OPTIONS = new UpdateOptions().upsert(true);
 
-    public MongoEntityManagerImpl(EntitySpec spec) {
-        this.spec = spec;
+    public MongoEntityManagerImpl(Class<T> entityClass) {
+        this.entityClass = entityClass;
+        this.spec = EntitySpec.from(entityClass);
         this.collection = this.initCollection();
     }
 
     @Override
-    public IdEntity<?> findOne(Bson query) {
-        System.out.println("find one for " + this.spec.getOriginClass());
-        this.collection.find();
+    public T findOne(Bson query) {
+        final T entity = this.collection.find(query).first();
 
-        return null;
+        return entity;
     }
 
     @Override
-    public void save(IdEntity<?> entity) {
+    public void save(T entity) {
         final Lock savingLock = this.savingLocks.get(entity, ($) -> new ReentrantLock());
         savingLock.lock();
         try {
@@ -91,9 +92,9 @@ public class MongoEntityManagerImpl implements MongoEntityManager {
         });
     }
 
-    private MongoCollection<Entity> initCollection() {
+    private MongoCollection<T> initCollection() {
         final MongoDatabase database = Humap.get().getConnection().getDatabase();
         final String name = this.spec.getCollection().orElseThrow(() -> new NoCollectionSpecifiedException(this.spec.getOriginClass()));
-        return database.getCollection(name, Entity.class).withCodecRegistry(CODEC_REGISTRY);
+        return database.getCollection(name, this.entityClass).withCodecRegistry(CODEC_REGISTRY);
     }
 }

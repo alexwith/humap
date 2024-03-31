@@ -16,7 +16,7 @@ public class MongoConnectionImpl implements MongoConnection {
 
     @Override
     public <K, T extends IdEntity<K>> MongoEntityManager getEntityManager(Class<T> clazz) {
-        return this.entityManagers.computeIfAbsent(clazz, ($) -> new MongoEntityManagerImpl(EntitySpec.from(clazz)));
+        return this.entityManagers.computeIfAbsent(clazz, ($) -> new MongoEntityManagerImpl<>(clazz));
     }
 
     @Override

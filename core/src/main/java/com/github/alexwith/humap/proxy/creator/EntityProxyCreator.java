@@ -5,7 +5,6 @@ import com.github.alexwith.humap.dirtytracking.DirtyTrackerImpl;
 import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.spec.EntityField;
 import com.github.alexwith.humap.entity.spec.EntitySpec;
-import com.github.alexwith.humap.entity.spec.EntitySpecImpl;
 import com.github.alexwith.humap.entity.spec.EntitySpecManager;
 import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.proxy.ProxyConstants;
@@ -31,6 +30,10 @@ public class EntityProxyCreator<T extends Entity> extends ProxyCreatorImpl<T> {
         ShadowField.set(entity, ProxyConstants.PROXY_PATH_FIELD, context.getPath());
 
         final Entity origin = (Entity) context.getOrigin();
+        if (origin == null) {
+            return entity;
+        }
+
         for (final EntityField field : this.spec.getFields().values()) {
             Object value = field.getValue(origin);
             if (value == null) {

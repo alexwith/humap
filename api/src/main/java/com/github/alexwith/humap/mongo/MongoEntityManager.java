@@ -3,9 +3,9 @@ package com.github.alexwith.humap.mongo;
 import com.github.alexwith.humap.entity.IdEntity;
 import org.bson.conversions.Bson;
 
-public interface MongoEntityManager {
+public interface MongoEntityManager<K, T extends IdEntity<K>> {
 
-    IdEntity<?> findOne(Bson query);
+    T findOne(Bson query);
 
-    void save(IdEntity<?> entity);
+    void save(T entity);
 }
