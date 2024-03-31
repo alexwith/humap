@@ -3,11 +3,9 @@ package com.github.alexwith.humap.proxy;
 import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.IdEntity;
 import com.github.alexwith.humap.exception.NonProxyableClassException;
-import com.github.alexwith.humap.proxy.creator.EntityProxyCreator;
+import com.github.alexwith.humap.proxy.creator.EntityProxyCreatorImpl;
 import com.github.alexwith.humap.proxy.creator.ProxyCreator;
 import com.github.alexwith.humap.proxy.decorator.Decorator;
-import com.github.alexwith.humap.type.ParamedType;
-import com.github.alexwith.humap.type.ParamedTypeImpl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import net.bytebuddy.ByteBuddy;
@@ -21,10 +19,9 @@ public class ProxyFactoryImpl implements ProxyFactory {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T proxy(ProxyCreationContext context) {
-        final ParamedType type = context.getType();
-        final Class<T> rootType = (Class<T>) type.getRoot();
+        final Class<T> type = (Class<T>) context.getType();
 
-        final ProxyCreator<T> proxyCreator = this.getProxyCreator(rootType);
+        final ProxyCreator<T> proxyCreator = this.getProxyCreator(type);
         return proxyCreator.create(context);
     }
 
@@ -32,7 +29,7 @@ public class ProxyFactoryImpl implements ProxyFactory {
     public <K, T extends IdEntity<K>> T proxyRootEntity(T unproxiedEntity, boolean isNew) {
         return this.proxy(ProxyCreationContextImpl.of((builder) -> builder
             .origin(unproxiedEntity)
-            .type(new ParamedTypeImpl(unproxiedEntity.getClass()))
+            .type(unproxiedEntity.getClass())
             .path("")
             .isNew(isNew)
         ));
@@ -72,6 +69,6 @@ public class ProxyFactoryImpl implements ProxyFactory {
     }
 
     private <T extends Entity> ProxyCreator<T> getEntityProxy(Class<T> clazz) {
-        return this.getProxyCreator(clazz, (proxiedClass) -> new EntityProxyCreator<>(clazz, proxiedClass));
+        return this.getProxyCreator(clazz, (proxiedClass) -> new EntityProxyCreatorImpl<>(clazz, proxiedClass));
     }
 }

@@ -13,12 +13,17 @@ import com.github.alexwith.humap.proxy.decorator.ShadowField;
 import com.github.alexwith.humap.util.SneakyThrows;
 import java.util.Optional;
 
-public class EntityProxyCreator<T extends Entity> extends ProxyCreatorImpl<T> {
+public class EntityProxyCreatorImpl<T extends Entity> extends ProxyCreatorImpl<T> implements EntityProxyCreator<T> {
     private final EntitySpec spec;
 
-    public EntityProxyCreator(Class<T> originClass, Class<? extends T> proxiedClass) {
+    public EntityProxyCreatorImpl(Class<T> originClass, Class<? extends T> proxiedClass) {
         super(originClass, proxiedClass);
         this.spec = Instances.get(EntitySpecManager.class).register(originClass, proxiedClass);
+    }
+
+    @Override
+    public EntitySpec getSpec() {
+        return this.spec;
     }
 
     @Override

@@ -5,10 +5,8 @@ import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.IdEntity;
 import com.github.alexwith.humap.entity.spec.EntityField;
 import com.github.alexwith.humap.entity.spec.EntitySpec;
-import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.proxy.Proxy;
-import com.github.alexwith.humap.proxy.ProxyFactory;
-import com.github.alexwith.humap.proxy.creator.ProxyCreator;
+import com.github.alexwith.humap.util.PrimitiveTypes;
 import com.github.alexwith.humap.util.SneakyThrows;
 import java.lang.reflect.Constructor;
 import org.bson.BsonReader;
@@ -23,28 +21,11 @@ import org.bson.codecs.configuration.CodecRegistry;
 public class EntityCodec implements Codec<Entity> {
     private final CodecRegistry registry;
     private final EntitySpec spec;
-    private final ProxyCreator<?> proxyCreator;
 
     public EntityCodec(CodecRegistry registry, EntitySpec spec) {
         this.registry = registry;
         this.spec = spec;
-        this.proxyCreator = Instances.get(ProxyFactory.class).getProxyCreator(this.spec.getOriginClass());
     }
-
-    /*
-    reader.readStartDocument();
-        while (reader.readBsonType() != BsonType.END_OF_DOCUMENT) {
-            String fieldName = reader.readName();
-            if (fieldName.equals("powerStatus")) {
-                monolight.setPowerStatus(powerStatusCodec.decode(reader, decoderContext));
-            } else if (fieldName.equals("colorTemperature")) {
-                monolight.setColorTemperature(integerCodec.decode(reader, decoderContext));
-            } else if (fieldName.equals("_id")){
-                reader.readObjectId();
-            }
-        }
-        reader.readEndDocument();
-     */
 
     @Override
     public Entity decode(BsonReader reader, DecoderContext context) {
@@ -59,8 +40,7 @@ public class EntityCodec implements Codec<Entity> {
             final String name = reader.readName();
             if (name.equals("_id")) {
                 final EntityField idField = this.spec.getIdField();
-                final Codec<?> codec = this.registry.get(idField.getType().getRoot());
-
+                final Codec<?> codec = this.registry.get(PrimitiveTypes.toBoxedType(idField.getType()));
                 final Object value = codec.decode(reader, context);
                 idField.setValue(entity, value);
                 continue;
@@ -72,7 +52,8 @@ public class EntityCodec implements Codec<Entity> {
                 continue;
             }
 
-            final Codec<?> codec = this.registry.get(field.getType().getRoot());
+            final Class<?> type = PrimitiveTypes.toBoxedType(field.getType());
+            final Codec<?> codec = this.registry.get(type);
             final Object value = codec.decode(reader, context);
             field.setValue(entity, value);
         }
@@ -106,8 +87,9 @@ public class EntityCodec implements Codec<Entity> {
 
             writer.writeName(name);
 
+            final Class<?> type = PrimitiveTypes.toBoxedType(field.getType());
             final Object value = field.getValue(entity);
-            final Encoder<Object> encoder = (Encoder<Object>) this.registry.get(value.getClass());
+            final Encoder<Object> encoder = (Encoder<Object>) this.registry.get(type);
             encoder.encode(writer, value, context);
         }
 

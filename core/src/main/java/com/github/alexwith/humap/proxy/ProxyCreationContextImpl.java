@@ -1,18 +1,17 @@
 package com.github.alexwith.humap.proxy;
 
 import com.github.alexwith.humap.dirtytracking.DirtyTracker;
-import com.github.alexwith.humap.type.ParamedType;
 import java.util.function.UnaryOperator;
 
 public class ProxyCreationContextImpl implements ProxyCreationContext {
     private final Object origin;
-    private final ParamedType type;
+    private final Class<?> type;
     private final DirtyTracker dirtyTracker;
     private final boolean isNew;
     private final String path;
     private final Object id;
 
-    private ProxyCreationContextImpl(Object origin, ParamedType type, DirtyTracker dirtyTracker, boolean isNew, String path, Object id) {
+    private ProxyCreationContextImpl(Object origin, Class<?> type, DirtyTracker dirtyTracker, boolean isNew, String path, Object id) {
         this.origin = origin;
         this.type = type;
         this.dirtyTracker = dirtyTracker;
@@ -35,7 +34,7 @@ public class ProxyCreationContextImpl implements ProxyCreationContext {
     }
 
     @Override
-    public ParamedType getType() {
+    public Class<?> getType() {
         return this.type;
     }
 
@@ -61,7 +60,7 @@ public class ProxyCreationContextImpl implements ProxyCreationContext {
 
     public static class Builder {
         private Object origin;
-        private ParamedType type;
+        private Class<?> type;
         private DirtyTracker dirtyTracker;
         private boolean isNew;
         private String path;
@@ -72,7 +71,7 @@ public class ProxyCreationContextImpl implements ProxyCreationContext {
             return this;
         }
 
-        public Builder type(ParamedType type) {
+        public Builder type(Class<?> type) {
             this.type = type;
             return this;
         }

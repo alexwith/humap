@@ -1,9 +1,12 @@
 package com.github.alexwith.humap.repository;
 
+import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.IdEntity;
+import com.github.alexwith.humap.entity.spec.EntityField;
 import com.github.alexwith.humap.entity.spec.EntitySpec;
 import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.proxy.ProxyFactory;
+import com.github.alexwith.humap.proxy.creator.EntityProxyCreator;
 import com.github.alexwith.humap.repository.query.Query;
 import com.github.alexwith.humap.repository.query.QueryImpl;
 import com.github.alexwith.humap.repository.query.QueryInterceptorImpl;
@@ -35,8 +38,7 @@ public class RepositoryManagerImpl implements RepositoryManager {
     private <K, T extends IdEntity<K>, U extends Repository<K, T>> U createRepository(Class<U> clazz) {
         final Class<T> entityClass = (Class<T>) TypeResolver.resolveRawArguments(Repository.class, clazz)[1];
         if (EntitySpec.from(entityClass) == null) {
-            final ProxyFactory proxyFactory = Instances.get(ProxyFactory.class);
-            proxyFactory.getProxyCreator(entityClass); // inits the entity spec
+            this.initProxyCreators(entityClass);
         }
 
         DynamicType.Builder<U> builder = new ByteBuddy().subclass(clazz);
@@ -74,5 +76,21 @@ public class RepositoryManagerImpl implements RepositoryManager {
         }
 
         return queries;
+    }
+
+    // inits the entity specs
+    private void initProxyCreators(Class<?> entityClass) {
+        final ProxyFactory proxyFactory = Instances.get(ProxyFactory.class);
+        if (proxyFactory.getProxyCreator(entityClass) instanceof EntityProxyCreator<?> entityProxyCreator) {
+            final EntitySpec spec = entityProxyCreator.getSpec();
+            for (final EntityField field : spec.getFields().values()) {
+                final Class<?> fieldType = field.getType();
+                if (!Entity.class.isAssignableFrom(fieldType) || entityClass.equals(fieldType)) {
+                    continue;
+                }
+
+                this.initProxyCreators(fieldType);
+            }
+        }
     }
 }

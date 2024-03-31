@@ -5,7 +5,6 @@ import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.proxy.ProxyCreationContext;
 import com.github.alexwith.humap.proxy.ProxyCreationContextImpl;
 import com.github.alexwith.humap.proxy.ProxyFactoryImpl;
-import com.github.alexwith.humap.type.ParamedType;
 import com.github.alexwith.humap.util.SneakyThrows;
 import java.lang.reflect.Constructor;
 
@@ -14,10 +13,10 @@ public abstract class ProxyCreatorImpl<T> implements ProxyCreator<T> {
     protected final Class<? extends T> clazz;
     protected final Constructor<? extends T> constructor;
 
-    public ProxyCreatorImpl(Class<T> originClass, Class<? extends T> clazz) {
+    public ProxyCreatorImpl(Class<T> originClass, Class<? extends T> proxiedClass) {
         this.originClass = originClass;
-        this.clazz = clazz;
-        this.constructor = SneakyThrows.supply(clazz::getDeclaredConstructor);
+        this.clazz = proxiedClass;
+        this.constructor = SneakyThrows.supply(proxiedClass::getDeclaredConstructor);
     }
 
     @Override
@@ -35,7 +34,7 @@ public abstract class ProxyCreatorImpl<T> implements ProxyCreator<T> {
         return this.constructor;
     }
 
-    protected Object proxy(Object object, ParamedType type, DirtyTracker dirtyTracker, String path) {
+    protected Object proxy(Object object, Class<?> type, DirtyTracker dirtyTracker, String path) {
         final ProxyCreationContext context = ProxyCreationContextImpl.of((builder) -> builder
             .origin(object)
             .type(type)

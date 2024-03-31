@@ -1,9 +1,7 @@
 package com.github.alexwith.humap.entity.spec;
 
 import com.github.alexwith.humap.entity.Entity;
-import com.github.alexwith.humap.type.ParamedType;
 import java.lang.reflect.Field;
-import java.util.Collection;
 
 public interface EntityField {
 
@@ -11,7 +9,7 @@ public interface EntityField {
 
     String getName();
 
-    ParamedType getType();
+    Class<?> getType();
 
     /**
      * Returns true if this is field of a type
@@ -36,7 +34,7 @@ public interface EntityField {
      * on a specified entity
      *
      * @param entity The entity to modify
-     * @param value The value that should be set at this field
+     * @param value  The value that should be set at this field
      */
     void setValue(Entity entity, Object value);
 }

@@ -7,7 +7,6 @@ import com.github.alexwith.humap.proxy.ProxyCreationContext;
 import com.github.alexwith.humap.proxy.ProxyCreationContextImpl;
 import com.github.alexwith.humap.proxy.ProxyFactoryImpl;
 import com.github.alexwith.humap.proxy.morphing.Morpher;
-import com.github.alexwith.humap.type.ParamedTypeImpl;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 import net.bytebuddy.description.method.MethodDescription;
@@ -54,7 +53,7 @@ public abstract class InterceptorImpl<T, R> implements Interceptor<T, R> {
 
         final ProxyCreationContext context = ProxyCreationContextImpl.of((builder) -> builder
             .origin(object)
-            .type(new ParamedTypeImpl(object.getClass()))
+            .type(object.getClass())
             .dirtyTracker(parentProxy.getDirtyTracker())
             .path(parentProxy.appendAbsolutePath(field.getName()))
         );

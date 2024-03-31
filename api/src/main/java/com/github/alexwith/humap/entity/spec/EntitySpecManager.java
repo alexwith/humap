@@ -6,5 +6,4 @@ public interface EntitySpecManager {
 
     EntitySpec get(Class<? extends Entity> entityClass);
 
-    EntitySpec register(Class<? extends Entity> originClass, Class<? extends Entity> proxiedClass);
-}
+    <T extends Entity> EntitySpec register(Class<T> originClass, Class<? extends T> proxiedClass);}
