@@ -1,5 +1,7 @@
 package com.github.alexwith.humap.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.github.alexwith.humap.Humap;
 import com.github.alexwith.humap.annotation.Collection;
 import com.github.alexwith.humap.annotation.EntityId;
@@ -9,41 +11,54 @@ import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.IdEntity;
 import com.github.alexwith.humap.repository.Repository;
 import com.mongodb.client.model.Filters;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserTest {
 
     @BeforeAll
-    public static void setup() {
+    public static void start() {
         Humap.get().connect("mongodb://localhost:27017", "test");
     }
 
     @Test
-    @Order(1)
-    public void createTest() {
-        /*final User user = new User(UUID.randomUUID(), "Alex", 100, new ArrayList<>(), new HashMap<>(), null).proxy();
-        user.getHistory().add("hello there");
-        user.getHistory().add("whats gooddd");
-        user.getGrades().put("English", "A+");
+    public void loadTest() {
+        this.applyUser((user) -> {
+            final Pet pet = user.getPet();
+
+            Repository.consume(UserRepository.class, (repository) -> {
+                final User foundUser = repository.findById(user.getId());
+                assertEquals(user.getId(), foundUser.getId());
+                assertEquals(user.getName(), foundUser.getName());
+                assertEquals(user.getScore(), foundUser.getScore());
+                assertEquals(user.getHistory(), foundUser.getHistory());
+                assertEquals(user.getGrades(), foundUser.getGrades());
+
+                final Pet foundPet = foundUser.getPet();
+                assertEquals(pet.getName(), foundPet.getName());
+                assertEquals(pet.getAge(), foundPet.getAge());
+            });
+        });
+    }
+
+    // This will create, save, run logic, then delete a user
+    private void applyUser(Consumer<User> consumer) {
+        final User user = new User(UUID.randomUUID(), "Alex", 100, new ArrayList<>(), new HashMap<>(), null).proxy();
+        user.getHistory().add("This is in the log!");
+        user.getGrades().put("English", "A-");
         user.setPet(new Pet("Snoop Dog", 5));
         user.save();
 
-        user.getPet().modifyAge((value) -> value + 1);
-        user.save();*/
+        consumer.accept(user);
 
-        Repository.consume(UserRepository.class, (repository) -> {
-            final User user = repository.findByName("Alex");
-            System.out.println("got user: " + user);
-        });
+        user.delete();
     }
 
     public interface UserRepository extends Repository<UUID, User> {
