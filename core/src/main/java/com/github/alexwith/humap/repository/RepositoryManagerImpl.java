@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.implementation.FixedValue;
 import net.bytebuddy.implementation.MethodDelegation;
 
 public class RepositoryManagerImpl implements RepositoryManager {
@@ -35,16 +36,16 @@ public class RepositoryManagerImpl implements RepositoryManager {
     }
 
     @SuppressWarnings("unchecked")
-    private <K, T extends IdEntity<K>, U extends Repository<K, T>> U createRepository(Class<U> clazz) {
-        final Class<T> entityClass = (Class<T>) TypeResolver.resolveRawArguments(Repository.class, clazz)[1];
+    private <K, T extends IdEntity<K>, U extends Repository<K, T>> U createRepository(Class<U> repositoryClass) {
+        final Class<T> entityClass = (Class<T>) TypeResolver.resolveRawArguments(Repository.class, repositoryClass)[1];
         if (EntitySpec.from(entityClass) == null) {
             this.initProxyCreators(entityClass);
         }
 
-        DynamicType.Builder<U> builder = new ByteBuddy().subclass(clazz);
+        DynamicType.Builder<U> builder = new ByteBuddy().subclass(repositoryClass);
 
         final Set<QueryInterceptorImpl<K, T>> queryInterceptors = new HashSet<>();
-        for (final Map.Entry<Method, Query> entry : this.parseQueries(clazz).entrySet()) {
+        for (final Map.Entry<Method, Query> entry : this.parseQueries(repositoryClass).entrySet()) {
             final Method method = entry.getKey();
             final Query query = entry.getValue();
 
@@ -56,6 +57,10 @@ public class RepositoryManagerImpl implements RepositoryManager {
                 .withParameters(method.getParameterTypes())
                 .intercept(MethodDelegation.to(queryInterceptor));
         }
+
+        builder = builder
+            .defineMethod("getEntityClass", Class.class, Visibility.PUBLIC)
+            .intercept(FixedValue.value(entityClass));
 
         final Class<? extends U> proxiedClass = builder.make().load(CLASS_LOADER).getLoaded();
         final U repository = SneakyThrows.supply(() -> proxiedClass.getDeclaredConstructor().newInstance());

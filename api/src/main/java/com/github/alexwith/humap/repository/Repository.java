@@ -1,17 +1,10 @@
 package com.github.alexwith.humap.repository;
 
-import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.IdEntity;
-import com.github.alexwith.humap.entity.spec.EntitySpec;
 import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.mongo.MongoConnection;
 import com.github.alexwith.humap.mongo.MongoEntityManager;
-import com.github.alexwith.humap.util.TypeResolver;
 import com.mongodb.client.model.Filters;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -55,16 +48,27 @@ public interface Repository<K, T extends IdEntity<K>> {
         return function.apply(Repository.get(repositoryClass));
     }
 
+    /**
+     * Returns the entity class associated with this repository
+     * <br>
+     * This method is implemented through
+     * bytebuddy at runtime
+     *
+     * @return The entity class
+     */
+    default Class<T> getEntityClass() {
+        return null;
+    }
+
     default T findById(K id) {
         return this.findOne(Filters.eq("_id", id));
     }
 
     @SuppressWarnings("unchecked")
     default T findOne(Bson query) {
-        final Class<T> clazz = (Class<T>) TypeResolver.resolveRawArguments(Repository.class, this.getClass())[1];
         final MongoConnection connection = Instances.get(MongoConnection.class);
-        final MongoEntityManager manager = connection.getEntityManager(clazz);
-        return (T) manager.findOne(query);
+        final MongoEntityManager<K, T> manager = connection.getEntityManager(this.getEntityClass());
+        return manager.findOne(query);
     }
 
     default <U extends Collection<T>> U findAll(Bson query) {

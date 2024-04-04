@@ -9,8 +9,6 @@ import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.IdEntity;
 import com.github.alexwith.humap.repository.Repository;
 import com.mongodb.client.model.Filters;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -43,8 +41,8 @@ public class UserTest {
         user.save();*/
 
         Repository.consume(UserRepository.class, (repository) -> {
-            final User user = repository.findById(UUID.fromString("d6a1df57-582b-435d-815a-b23a7790e016"));
-            System.out.println("test: " + user);
+            final User user = repository.findByName("Alex");
+            System.out.println("got user: " + user);
         });
     }
 

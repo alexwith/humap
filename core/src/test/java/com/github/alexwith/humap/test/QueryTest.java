@@ -18,7 +18,7 @@ public class QueryTest {
 
     @BeforeAll
     public static void setup() {
-        Humap.get(); // init the project
+        Humap.get(); // init humap
     }
 
     @Test
