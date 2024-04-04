@@ -5,7 +5,7 @@ import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.mongo.MongoConnection;
 import com.github.alexwith.humap.mongo.MongoEntityManager;
 import com.mongodb.client.model.Filters;
-import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.bson.conversions.Bson;
@@ -71,7 +71,10 @@ public interface Repository<K, T extends IdEntity<K>> {
         return manager.findOne(query);
     }
 
-    default <U extends Collection<T>> U findAll(Bson query) {
-        return (U) null;
+    @SuppressWarnings("unchecked")
+    default List<T> findAll(Bson query) {
+        final MongoConnection connection = Instances.get(MongoConnection.class);
+        final MongoEntityManager<K, T> manager = connection.getEntityManager(this.getEntityClass());
+        return manager.findAll(query);
     }
 }

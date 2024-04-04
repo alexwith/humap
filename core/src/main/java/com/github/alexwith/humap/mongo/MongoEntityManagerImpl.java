@@ -51,9 +51,17 @@ public class MongoEntityManagerImpl<K, T extends IdEntity<K>> implements MongoEn
 
     @Override
     public T findOne(Bson query) {
-        final T entity = this.collection.find(query).first();
+        return this.collection.find(query).first();
+    }
 
-        return entity;
+    @Override
+    public List<T> findAll(Bson query) {
+        final List<T> list = new ArrayList<>();
+        for (final T entity : this.collection.find()) {
+            list.add(entity);
+        }
+
+        return list;
     }
 
     @Override
