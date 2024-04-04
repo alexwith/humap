@@ -24,57 +24,56 @@ public class QueryTest {
     @Test
     public void test() {
         assertEquals(
-            this.resolveMethod("findByName", "Alex"),
-            Filters.eq("name", "Alex")
+            Filters.eq("name", "Alex"),
+            this.resolveMethod("findByName", "Alex")
         );
 
         assertEquals(
-            this.resolveMethod("findByNameAndAge", "Alex", 21),
             Filters.and(
                 Filters.eq("name", "Alex"),
                 Filters.eq("age", 21)
-            )
+            ),
+            this.resolveMethod("findByNameAndAge", "Alex", 21)
         );
 
         assertEquals(
-            this.resolveMethod("findByNameAndAgeOrUsername", "Alex", 19, "alexwith"),
             Filters.or(
                 Filters.and(
                     Filters.eq("name", "Alex"),
                     Filters.eq("age", 19)
                 ),
                 Filters.eq("username", "alexwith")
-            )
+            ),
+            this.resolveMethod("findByNameAndAgeOrUsername", "Alex", 19, "alexwith")
         );
 
         assertEquals(
-            this.resolveMethod("findByLtAge", 30),
-            Filters.lt("age", 30)
+            Filters.lt("age", 30),
+            this.resolveMethod("findByLtAge", 30)
         );
 
         assertEquals(
-            this.resolveMethod("findByNameAndLteAge", "Alex", 30),
             Filters.and(
                 Filters.eq("name", "Alex"),
                 Filters.lte("age", 30)
-            )
+            ),
+            this.resolveMethod("findByNameAndLteAge", "Alex", 30)
         );
 
         assertEquals(
-            this.resolveMethod("findByGtAge", 30),
-            Filters.gt("age", 30)
+            Filters.gt("age", 30),
+            this.resolveMethod("findByGtAge", 30)
         );
 
         assertEquals(
-            this.resolveMethod("findByNameAndGteAge", "Alex", 30),
             Filters.and(
                 Filters.eq("name", "Alex"),
                 Filters.gte("age", 30)
-            )
+            ),
+            this.resolveMethod("findByNameAndGteAge", "Alex", 30)
         );
 
         assertEquals(
-            this.resolveMethod("findByCustom", "Alex", 30, "Bob", 50),
             Filters.or(
                 Filters.eq("name", "Alex"),
                 Filters.eq("age", 30),
@@ -82,7 +81,8 @@ public class QueryTest {
                     Filters.eq("name", "Bob"),
                     Filters.lte("age", 50)
                 )
-            )
+            ),
+            this.resolveMethod("findByCustom", "Alex", 30, "Bob", 50)
         );
     }
 
