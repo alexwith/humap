@@ -8,4 +8,6 @@ public interface MongoEntityManager<K, T extends IdEntity<K>> {
     T findOne(Bson query);
 
     void save(T entity);
+
+    void delete(T entity);
 }

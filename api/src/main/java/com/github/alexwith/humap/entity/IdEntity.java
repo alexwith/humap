@@ -11,7 +11,14 @@ public interface IdEntity<K> extends Entity {
     @SuppressWarnings("unchecked")
     default void save() {
         final MongoConnection connection = Instances.get(MongoConnection.class);
-        final MongoEntityManager manager = connection.getEntityManager(this.getClass());
+        final MongoEntityManager<K, IdEntity<K>> manager = connection.getEntityManager(this.getClass());
         manager.save(this);
+    }
+
+    @SuppressWarnings("unchecked")
+    default void delete() {
+        final MongoConnection connection = Instances.get(MongoConnection.class);
+        final MongoEntityManager<K, IdEntity<K>> manager = connection.getEntityManager(this.getClass());
+        manager.delete(this);
     }
 }

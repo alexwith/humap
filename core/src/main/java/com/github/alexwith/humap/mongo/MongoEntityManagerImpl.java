@@ -2,7 +2,6 @@ package com.github.alexwith.humap.mongo;
 
 import com.github.alexwith.humap.Humap;
 import com.github.alexwith.humap.dirtytracking.DirtyTracker;
-import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.entity.IdEntity;
 import com.github.alexwith.humap.entity.spec.EntitySpec;
 import com.github.alexwith.humap.exception.NoCollectionSpecifiedException;
@@ -59,9 +58,7 @@ public class MongoEntityManagerImpl<K, T extends IdEntity<K>> implements MongoEn
 
     @Override
     public void save(T entity) {
-        final Lock savingLock = this.savingLocks.get(entity, ($) -> new ReentrantLock());
-        savingLock.lock();
-        try {
+        this.applySavingLock(entity, () -> {
             final BsonDocument document = BsonDocumentWrapper.asBsonDocument(entity, CODEC_REGISTRY);
 
             final List<Bson> updates = new ArrayList<>();
@@ -76,6 +73,22 @@ public class MongoEntityManagerImpl<K, T extends IdEntity<K>> implements MongoEn
 
             final DirtyTracker dirtyTracker = Proxy.asProxy(entity).getDirtyTracker();
             dirtyTracker.setAllDirty(false);
+        });
+    }
+
+    @Override
+    public void delete(T entity) {
+        this.applySavingLock(entity, () -> {
+            final Bson idQuery = Filters.eq("_id", entity.getId());
+            this.collection.deleteOne(idQuery);
+        });
+    }
+
+    private void applySavingLock(T entity, Runnable runnable) {
+        final Lock savingLock = this.savingLocks.get(entity, ($) -> new ReentrantLock());
+        savingLock.lock();
+        try {
+            runnable.run();
         } finally {
             savingLock.unlock();
         }
