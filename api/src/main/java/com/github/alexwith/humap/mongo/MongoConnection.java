@@ -7,7 +7,7 @@ import com.mongodb.client.MongoDatabase;
 
 public interface MongoConnection {
 
-    <K, T extends IdEntity<K>> MongoEntityManager getEntityManager(Class<T> clazz);
+    <K, T extends IdEntity<K>> MongoEntityManager<K, T> getEntityManager(Class<T> clazz);
 
     MongoClient getClient();
 

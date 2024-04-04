@@ -2,7 +2,6 @@ package com.github.alexwith.humap.repository;
 
 import com.github.alexwith.humap.entity.IdEntity;
 import com.github.alexwith.humap.instance.Instances;
-import com.github.alexwith.humap.mongo.MongoConnection;
 import com.github.alexwith.humap.mongo.MongoEntityManager;
 import com.mongodb.client.model.Filters;
 import java.util.List;
@@ -64,17 +63,11 @@ public interface Repository<K, T extends IdEntity<K>> {
         return this.findOne(Filters.eq("_id", id));
     }
 
-    @SuppressWarnings("unchecked")
     default T findOne(Bson query) {
-        final MongoConnection connection = Instances.get(MongoConnection.class);
-        final MongoEntityManager<K, T> manager = connection.getEntityManager(this.getEntityClass());
-        return manager.findOne(query);
+        return MongoEntityManager.get(this.getEntityClass()).findOne(query);
     }
 
-    @SuppressWarnings("unchecked")
     default List<T> findAll(Bson query) {
-        final MongoConnection connection = Instances.get(MongoConnection.class);
-        final MongoEntityManager<K, T> manager = connection.getEntityManager(this.getEntityClass());
-        return manager.findAll(query);
+        return MongoEntityManager.get(this.getEntityClass()).findAll(query);
     }
 }
