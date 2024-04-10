@@ -6,14 +6,17 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import org.bson.conversions.Bson;
 
 public class QueryImpl implements Query {
+    private final boolean isAsync;
     private final List<List<QueryField>> orGroup;
 
     private static final String PREFIX = "findBy";
 
-    public QueryImpl(List<List<QueryField>> orGroup) {
+    public QueryImpl(boolean isAsync, List<List<QueryField>> orGroup) {
+        this.isAsync = isAsync;
         this.orGroup = orGroup;
     }
 
@@ -21,6 +24,9 @@ public class QueryImpl implements Query {
         if (method.isDefault()) {
             return Optional.empty();
         }
+
+        final Class<?> returnType = method.getReturnType();
+        final boolean isAsync = CompletableFuture.class.isAssignableFrom(returnType);
 
         final String[] signature;
         if (method.isAnnotationPresent(QuerySignature.class)) {
@@ -62,7 +68,12 @@ public class QueryImpl implements Query {
 
         orGroup.add(currentAndGroup);
 
-        return Optional.of(new QueryImpl(orGroup));
+        return Optional.of(new QueryImpl(isAsync, orGroup));
+    }
+
+    @Override
+    public boolean isAsync() {
+        return this.isAsync;
     }
 
     @Override

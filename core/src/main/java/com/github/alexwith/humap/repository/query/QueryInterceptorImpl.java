@@ -28,6 +28,7 @@ public class QueryInterceptorImpl<K, T extends IdEntity<K>> implements QueryInte
         }
 
         final Bson filter = this.query.resolve(args);
-        return this.repository.findOne(filter);
+        final boolean isAsync = this.query.isAsync();
+        return isAsync ? this.repository.findOneAsync(filter) : this.repository.findOne(filter);
     }
 }

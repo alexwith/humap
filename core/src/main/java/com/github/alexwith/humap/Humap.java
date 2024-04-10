@@ -2,6 +2,8 @@ package com.github.alexwith.humap;
 
 import com.github.alexwith.humap.entity.spec.EntitySpecManager;
 import com.github.alexwith.humap.entity.spec.EntitySpecManagerImpl;
+import com.github.alexwith.humap.executor.ExecutorManager;
+import com.github.alexwith.humap.executor.ExecutorManagerImpl;
 import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.mongo.MongoConnection;
 import com.github.alexwith.humap.mongo.MongoConnectionImpl;
@@ -11,6 +13,7 @@ import com.github.alexwith.humap.repository.RepositoryManager;
 import com.github.alexwith.humap.repository.RepositoryManagerImpl;
 
 public class Humap {
+    private final ExecutorManager executorManager;
     private final ProxyFactory proxyFactory;
     private final MongoConnection connection;
     private final EntitySpecManager entitySpecManager;
@@ -19,12 +22,14 @@ public class Humap {
     private static final Humap INSTANCE = new Humap();
 
     public Humap() {
+        this.executorManager = new ExecutorManagerImpl();
         this.proxyFactory = new ProxyFactoryImpl();
         this.connection = new MongoConnectionImpl();
         this.entitySpecManager = new EntitySpecManagerImpl();
         this.repositoryManager = new RepositoryManagerImpl();
 
         Instances.register(
+            this.executorManager,
             this.proxyFactory,
             this.connection,
             this.entitySpecManager,
@@ -34,6 +39,10 @@ public class Humap {
 
     public static Humap get() {
         return INSTANCE;
+    }
+
+    public ExecutorManager getExecutorManager() {
+        return this.executorManager;
     }
 
     public ProxyFactory getProxyFactory() {

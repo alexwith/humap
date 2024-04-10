@@ -4,6 +4,8 @@ import org.bson.conversions.Bson;
 
 public interface Query {
 
+    boolean isAsync();
+
     /**
      * Resolve the query with values
      *

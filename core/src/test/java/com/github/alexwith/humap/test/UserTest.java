@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.BeforeAll;
@@ -48,6 +49,17 @@ public class UserTest {
         });
     }
 
+    @Test
+    public void testing() {
+        this.applyUser((user) -> {
+            Repository.consume(UserRepository.class, (repository) -> {
+                repository.findByNameAsync("Alex").thenAccept((foundUser) -> {
+                    System.out.println("loaded %s async on thread %s".formatted(foundUser, Thread.currentThread().getName()));
+                });
+            });
+        });
+    }
+
     // This will create, save, run logic, then delete a user
     private void applyUser(Consumer<User> consumer) {
         final User user = new User(UUID.randomUUID(), "Alex", 100, new ArrayList<>(), new HashMap<>(), null).proxy();
@@ -64,6 +76,9 @@ public class UserTest {
     public interface UserRepository extends Repository<UUID, User> {
 
         User findByName(String name);
+
+        @QuerySignature("name")
+        CompletableFuture<User> findByNameAsync(String name);
 
         User findByNameAndLtScore(String name, int score);
 

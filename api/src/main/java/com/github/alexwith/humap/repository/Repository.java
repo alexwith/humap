@@ -1,10 +1,13 @@
 package com.github.alexwith.humap.repository;
 
 import com.github.alexwith.humap.entity.IdEntity;
+import com.github.alexwith.humap.executor.ExecutorManager;
 import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.mongo.MongoEntityManager;
 import com.mongodb.client.model.Filters;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.bson.conversions.Bson;
@@ -69,5 +72,19 @@ public interface Repository<K, T extends IdEntity<K>> {
 
     default List<T> findAll(Bson query) {
         return MongoEntityManager.get(this.getEntityClass()).findAll(query);
+    }
+
+    default CompletableFuture<T> findByIdAsync(K id) {
+        return this.findOneAsync(Filters.eq("_id", id));
+    }
+
+    default CompletableFuture<T> findOneAsync(Bson query) {
+        final Executor executor = Instances.get(ExecutorManager.class).getExecutorOrDefault(null);
+        return CompletableFuture.supplyAsync(() -> this.findOne(query), executor);
+    }
+
+    default CompletableFuture<List<T>> findAllAsync(Bson query) {
+        final Executor executor = Instances.get(ExecutorManager.class).getExecutorOrDefault(null);
+        return CompletableFuture.supplyAsync(() -> this.findAll(query), executor);
     }
 }
