@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.github.alexwith.humap.Humap;
 import com.github.alexwith.humap.annotation.Collection;
 import com.github.alexwith.humap.annotation.EntityId;
+import com.github.alexwith.humap.annotation.FindAll;
 import com.github.alexwith.humap.annotation.Modifies;
 import com.github.alexwith.humap.annotation.QuerySignature;
 import com.github.alexwith.humap.entity.Entity;
@@ -53,8 +54,8 @@ public class UserTest {
     public void testing() {
         this.applyUser((user) -> {
             Repository.consume(UserRepository.class, (repository) -> {
-                repository.findByNameAsync("Alex").thenAccept((foundUser) -> {
-                    System.out.println("loaded %s async on thread %s".formatted(foundUser, Thread.currentThread().getName()));
+                repository.findByGtScore(99).thenAccept((users) -> {
+                    System.out.println("thread %s, users: %s".formatted(Thread.currentThread().getName(), users));
                 });
             });
         });
@@ -86,6 +87,9 @@ public class UserTest {
 
         @QuerySignature({"name", "|", "score"})
         User findBySpecialCase(String name, int score);
+
+        @FindAll
+        CompletableFuture<List<User>> findByGtScore(int score);
 
         default List<User> findSmallScores() {
             return this.findAll(Filters.lte("score", 100));

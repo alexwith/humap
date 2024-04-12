@@ -57,7 +57,7 @@ public class MongoEntityManagerImpl<K, T extends IdEntity<K>> implements MongoEn
     @Override
     public List<T> findAll(Bson query) {
         final List<T> list = new ArrayList<>();
-        for (final T entity : this.collection.find()) {
+        for (final T entity : this.collection.find(query)) {
             list.add(entity);
         }
 

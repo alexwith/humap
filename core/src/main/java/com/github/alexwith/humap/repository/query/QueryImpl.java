@@ -1,5 +1,6 @@
 package com.github.alexwith.humap.repository.query;
 
+import com.github.alexwith.humap.annotation.FindAll;
 import com.github.alexwith.humap.annotation.QuerySignature;
 import com.mongodb.client.model.Filters;
 import java.lang.reflect.Method;
@@ -11,12 +12,14 @@ import org.bson.conversions.Bson;
 
 public class QueryImpl implements Query {
     private final boolean isAsync;
+    private final boolean isFindAll;
     private final List<List<QueryField>> orGroup;
 
     private static final String PREFIX = "findBy";
 
-    public QueryImpl(boolean isAsync, List<List<QueryField>> orGroup) {
+    public QueryImpl(boolean isAsync, boolean isFindAll, List<List<QueryField>> orGroup) {
         this.isAsync = isAsync;
+        this.isFindAll = isFindAll;
         this.orGroup = orGroup;
     }
 
@@ -27,6 +30,7 @@ public class QueryImpl implements Query {
 
         final Class<?> returnType = method.getReturnType();
         final boolean isAsync = CompletableFuture.class.isAssignableFrom(returnType);
+        final boolean isFindAll = method.isAnnotationPresent(FindAll.class) || List.class.isAssignableFrom(returnType);
 
         final String[] signature;
         if (method.isAnnotationPresent(QuerySignature.class)) {
@@ -68,12 +72,17 @@ public class QueryImpl implements Query {
 
         orGroup.add(currentAndGroup);
 
-        return Optional.of(new QueryImpl(isAsync, orGroup));
+        return Optional.of(new QueryImpl(isAsync, isFindAll, orGroup));
     }
 
     @Override
     public boolean isAsync() {
         return this.isAsync;
+    }
+
+    @Override
+    public boolean isFindAll() {
+        return this.isFindAll;
     }
 
     @Override

@@ -6,6 +6,8 @@ public interface Query {
 
     boolean isAsync();
 
+    boolean isFindAll();
+
     /**
      * Resolve the query with values
      *
