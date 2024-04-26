@@ -18,20 +18,34 @@ public interface Entity {
      * @param entity The entity to proxy
      * @return An instance of the proxied entity
      */
-    static <K, T extends IdEntity<K>> T proxy(T entity) {
+    static <T extends Entity> T proxy(T entity) {
         final ProxyFactory proxyFactory = Instances.get(ProxyFactory.class);
-        return proxyFactory.proxyRootEntity(entity, true);
+        return proxyFactory.proxyEntity(entity, true);
     }
 
     /**
-     * Calls {@link Entity#proxy(IdEntity)} with the
+     * Calls {@link Entity#proxy(Entity)} with the
      * current entity, these are just different for
      * preference’s sake
      *
      * @return An instance of the proxied entity
      */
     @SuppressWarnings("unchecked")
-    default <K, T extends IdEntity<K>> T proxy() {
+    default <T extends Entity> T proxy() {
         return Entity.proxy((T) this);
+    }
+
+    /**
+     * If the entity is new. A new entity is an
+     * entity that has been created, but not saved
+     * yet
+     * <br>
+     * This method is implemented in bytecode
+     * at runtime
+     *
+     * @return If the entity is new
+     */
+    default boolean isNew() {
+        return false;
     }
 }

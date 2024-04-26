@@ -81,7 +81,7 @@ public class EntityCodec implements Codec<Entity> {
             }
 
             final String name = field.getName();
-            if (!dirtyTracker.isAllDirty() && !field.isProxyable() && !dirtyTracker.isDirty(proxy.appendAbsolutePath(name))) {
+            if (!dirtyTracker.isAllDirty() && !field.isProxyable() && !dirtyTracker.isDirty(name)) {
                 continue;
             }
 
@@ -92,6 +92,8 @@ public class EntityCodec implements Codec<Entity> {
             final Encoder<Object> encoder = (Encoder<Object>) this.registry.get(type);
             encoder.encode(writer, value, context);
         }
+
+        dirtyTracker.setAllDirty(false);
 
         writer.writeEndDocument();
     }

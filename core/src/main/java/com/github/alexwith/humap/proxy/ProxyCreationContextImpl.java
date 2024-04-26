@@ -1,22 +1,17 @@
 package com.github.alexwith.humap.proxy;
 
-import com.github.alexwith.humap.dirtytracking.DirtyTracker;
 import java.util.function.UnaryOperator;
 
 public class ProxyCreationContextImpl implements ProxyCreationContext {
     private final Object origin;
     private final Class<?> type;
-    private final DirtyTracker dirtyTracker;
     private final boolean isNew;
-    private final String path;
     private final Object id;
 
-    private ProxyCreationContextImpl(Object origin, Class<?> type, DirtyTracker dirtyTracker, boolean isNew, String path, Object id) {
+    private ProxyCreationContextImpl(Object origin, Class<?> type, boolean isNew, Object id) {
         this.origin = origin;
         this.type = type;
-        this.dirtyTracker = dirtyTracker;
         this.isNew = isNew;
-        this.path = path;
         this.id = id;
     }
 
@@ -39,18 +34,8 @@ public class ProxyCreationContextImpl implements ProxyCreationContext {
     }
 
     @Override
-    public DirtyTracker getDirtyTracker() {
-        return this.dirtyTracker;
-    }
-
-    @Override
     public boolean isNew() {
         return this.isNew;
-    }
-
-    @Override
-    public String getPath() {
-        return this.path;
     }
 
     @Override
@@ -61,9 +46,7 @@ public class ProxyCreationContextImpl implements ProxyCreationContext {
     public static class Builder {
         private Object origin;
         private Class<?> type;
-        private DirtyTracker dirtyTracker;
         private boolean isNew;
-        private String path;
         private Object id;
 
         public Builder origin(Object origin) {
@@ -76,18 +59,8 @@ public class ProxyCreationContextImpl implements ProxyCreationContext {
             return this;
         }
 
-        public Builder dirtyTracker(DirtyTracker dirtyTracker) {
-            this.dirtyTracker = dirtyTracker;
-            return this;
-        }
-
         public Builder isNew(boolean isNew) {
             this.isNew = isNew;
-            return this;
-        }
-
-        public Builder path(String path) {
-            this.path = path;
             return this;
         }
 
@@ -97,7 +70,7 @@ public class ProxyCreationContextImpl implements ProxyCreationContext {
         }
 
         public ProxyCreationContext build() {
-            return new ProxyCreationContextImpl(this.origin, this.type, this.dirtyTracker, this.isNew, this.path, this.id);
+            return new ProxyCreationContextImpl(this.origin, this.type, this.isNew, this.id);
         }
     }
 }

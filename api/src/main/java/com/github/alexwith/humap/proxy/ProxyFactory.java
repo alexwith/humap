@@ -1,6 +1,6 @@
 package com.github.alexwith.humap.proxy;
 
-import com.github.alexwith.humap.entity.IdEntity;
+import com.github.alexwith.humap.entity.Entity;
 import com.github.alexwith.humap.exception.NonProxyableClassException;
 import com.github.alexwith.humap.proxy.creator.ProxyCreator;
 
@@ -8,7 +8,7 @@ public interface ProxyFactory {
 
     <T> T proxy(ProxyCreationContext context);
 
-    <K, T extends IdEntity<K>> T proxyRootEntity(T unproxiedEntity, boolean isNew);
+    <T extends Entity> T proxyEntity(T unproxiedEntity, boolean isNew);
 
     /**
      * Gets or creates the relevant proxy creator

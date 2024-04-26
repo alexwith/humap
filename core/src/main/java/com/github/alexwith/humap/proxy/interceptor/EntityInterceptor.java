@@ -36,7 +36,7 @@ public class EntityInterceptor extends InterceptorImpl<Entity, Object> {
         }
 
         final DirtyTracker dirtyTracker = proxy.getDirtyTracker();
-        dirtyTracker.add(proxy.appendAbsolutePath(field.getName()));
+        dirtyTracker.add(field.getName());
 
         this.tryProxyArgs(args, proxy, field);
 

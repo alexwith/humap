@@ -1,7 +1,5 @@
 package com.github.alexwith.humap.proxy;
 
-import com.github.alexwith.humap.dirtytracking.DirtyTracker;
-
 public interface ProxyCreationContext {
 
     /**
@@ -15,11 +13,7 @@ public interface ProxyCreationContext {
 
     Class<?> getType();
 
-    DirtyTracker getDirtyTracker();
-
     boolean isNew();
-
-    String getPath();
 
     Object getId();
 }

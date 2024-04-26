@@ -1,10 +1,14 @@
 package com.github.alexwith.humap.dirtytracking;
 
-import java.util.Set;
-
 public interface DirtyTracker {
 
-    Set<String> getDirty();
+    /**
+     * If the entity has any dirty entries,
+     * this checks normal fields and collections
+     *
+     * @return Are of the entities fields dirty
+     */
+    boolean isDirty();
 
     /**
      * When a field should be marked as dirty
@@ -26,4 +30,6 @@ public interface DirtyTracker {
     boolean isAllDirty();
 
     void setAllDirty(boolean allDirty);
+
+    void takeCollectionSnapshots();
 }

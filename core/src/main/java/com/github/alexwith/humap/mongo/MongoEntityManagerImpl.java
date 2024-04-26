@@ -1,12 +1,10 @@
 package com.github.alexwith.humap.mongo;
 
 import com.github.alexwith.humap.Humap;
-import com.github.alexwith.humap.dirtytracking.DirtyTracker;
 import com.github.alexwith.humap.entity.IdEntity;
 import com.github.alexwith.humap.entity.spec.EntitySpec;
 import com.github.alexwith.humap.exception.NoCollectionSpecifiedException;
 import com.github.alexwith.humap.mongo.codec.EntityCodecProvider;
-import com.github.alexwith.humap.proxy.Proxy;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.mongodb.MongoClientSettings;
@@ -78,9 +76,6 @@ public class MongoEntityManagerImpl<K, T extends IdEntity<K>> implements MongoEn
 
             final Bson idQuery = Filters.eq("_id", entity.getId());
             this.collection.updateOne(idQuery, Updates.combine(updates), UPDATE_OPTIONS);
-
-            final DirtyTracker dirtyTracker = Proxy.asProxy(entity).getDirtyTracker();
-            dirtyTracker.setAllDirty(false);
         });
     }
 

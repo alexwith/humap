@@ -18,21 +18,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class UserTest {
+public class UserTest extends TestHumap {
 
     @BeforeAll
-    public static void start() {
+    public static void setup() {
         Humap.get().connect("mongodb://localhost:27017", "test");
     }
 
     @Test
     public void loadTest() {
-        this.applyUser((user) -> {
+        this.applyEntity(this.sampleUser(), (user) -> {
             final Pet pet = user.getPet();
 
             Repository.consume(UserRepository.class, (repository) -> {
@@ -50,28 +49,12 @@ public class UserTest {
         });
     }
 
-    @Test
-    public void testing() {
-        this.applyUser((user) -> {
-            Repository.consume(UserRepository.class, (repository) -> {
-                repository.findByGtScore(99).thenAccept((users) -> {
-                    System.out.println("thread %s, users: %s".formatted(Thread.currentThread().getName(), users));
-                });
-            });
-        });
-    }
-
-    // This will create, save, run logic, then delete a user
-    private void applyUser(Consumer<User> consumer) {
+    private User sampleUser() {
         final User user = new User(UUID.randomUUID(), "Alex", 100, new ArrayList<>(), new HashMap<>(), null).proxy();
         user.getHistory().add("This is in the log!");
         user.getGrades().put("English", "A-");
         user.setPet(new Pet("Snoop Dog", 5));
-        user.save();
-
-        consumer.accept(user);
-
-        user.delete();
+        return user;
     }
 
     public interface UserRepository extends Repository<UUID, User> {

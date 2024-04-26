@@ -1,7 +1,6 @@
 package com.github.alexwith.humap.proxy;
 
 import com.github.alexwith.humap.entity.Entity;
-import com.github.alexwith.humap.entity.IdEntity;
 import com.github.alexwith.humap.exception.NonProxyableClassException;
 import com.github.alexwith.humap.proxy.creator.EntityProxyCreatorImpl;
 import com.github.alexwith.humap.proxy.creator.ProxyCreator;
@@ -26,11 +25,10 @@ public class ProxyFactoryImpl implements ProxyFactory {
     }
 
     @Override
-    public <K, T extends IdEntity<K>> T proxyRootEntity(T unproxiedEntity, boolean isNew) {
+    public <T extends Entity> T proxyEntity(T unproxiedEntity, boolean isNew) {
         return this.proxy(ProxyCreationContextImpl.of((builder) -> builder
             .origin(unproxiedEntity)
             .type(unproxiedEntity.getClass())
-            .path("")
             .isNew(isNew)
         ));
     }

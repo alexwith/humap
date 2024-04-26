@@ -1,6 +1,5 @@
 package com.github.alexwith.humap.proxy.creator;
 
-import com.github.alexwith.humap.dirtytracking.DirtyTracker;
 import com.github.alexwith.humap.instance.Instances;
 import com.github.alexwith.humap.proxy.ProxyCreationContext;
 import com.github.alexwith.humap.proxy.ProxyCreationContextImpl;
@@ -34,12 +33,11 @@ public abstract class ProxyCreatorImpl<T> implements ProxyCreator<T> {
         return this.constructor;
     }
 
-    protected Object proxy(Object object, Class<?> type, DirtyTracker dirtyTracker, String path) {
+    protected Object proxy(Object object, Class<?> type, boolean isNew) {
         final ProxyCreationContext context = ProxyCreationContextImpl.of((builder) -> builder
             .origin(object)
             .type(type)
-            .dirtyTracker(dirtyTracker)
-            .path(path)
+            .isNew(isNew)
         );
         return Instances.get(ProxyFactoryImpl.class).proxy(context);
     }

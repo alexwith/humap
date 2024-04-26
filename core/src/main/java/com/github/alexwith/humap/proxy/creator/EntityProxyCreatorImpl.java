@@ -11,7 +11,6 @@ import com.github.alexwith.humap.proxy.ProxyConstants;
 import com.github.alexwith.humap.proxy.ProxyCreationContext;
 import com.github.alexwith.humap.proxy.decorator.ShadowField;
 import com.github.alexwith.humap.util.SneakyThrows;
-import java.util.Optional;
 
 public class EntityProxyCreatorImpl<T extends Entity> extends ProxyCreatorImpl<T> implements EntityProxyCreator<T> {
     private final EntitySpec spec;
@@ -30,12 +29,13 @@ public class EntityProxyCreatorImpl<T extends Entity> extends ProxyCreatorImpl<T
     public T create(ProxyCreationContext context) {
         final T entity = SneakyThrows.supply(this.constructor::newInstance);
 
-        final DirtyTracker dirtyTracker = Optional.ofNullable(context.getDirtyTracker()).orElse(new DirtyTrackerImpl(context.isNew()));
+        final DirtyTracker dirtyTracker = new DirtyTrackerImpl(entity, context.isNew());
         ShadowField.set(entity, ProxyConstants.PROXY_DIRTY_TRACKER_FIELD, dirtyTracker);
-        ShadowField.set(entity, ProxyConstants.PROXY_PATH_FIELD, context.getPath());
+        ShadowField.set(entity, ProxyConstants.ENTITY_NEW_FIELD, context.isNew());
 
         final Entity origin = (Entity) context.getOrigin();
         if (origin == null) {
+            dirtyTracker.takeCollectionSnapshots();
             return entity;
         }
 
@@ -46,12 +46,13 @@ public class EntityProxyCreatorImpl<T extends Entity> extends ProxyCreatorImpl<T
             }
 
             if (field.isProxyable()) {
-                final String path = context.getPath().isEmpty() ? field.getName() : context.getPath().concat(field.getName());
-                value = this.proxy(value, field.getType(), context.getDirtyTracker(), path);
+                value = this.proxy(value, field.getType(), context.isNew());
             }
 
             field.setValue(entity, value);
         }
+
+        dirtyTracker.takeCollectionSnapshots();
 
         return entity;
     }

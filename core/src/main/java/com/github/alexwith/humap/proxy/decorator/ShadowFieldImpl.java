@@ -42,8 +42,9 @@ public class ShadowFieldImpl implements ShadowField {
         builder = builder.defineField(this.name, this.type, FieldPersistence.TRANSIENT, Visibility.PUBLIC);
 
         if (this.getter) {
+            final String prefix = this.type == boolean.class ? "is" : "get";
             builder = builder
-                .defineMethod("get".concat(this.capitalizedName), this.type, Visibility.PUBLIC)
+                .defineMethod(prefix.concat(this.capitalizedName), this.type, Visibility.PUBLIC)
                 .intercept(FieldAccessor.ofField(this.name));
         }
 
