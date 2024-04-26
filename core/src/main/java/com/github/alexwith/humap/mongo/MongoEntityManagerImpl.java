@@ -74,7 +74,8 @@ public class MongoEntityManagerImpl<K, T extends IdEntity<K>> implements MongoEn
                 return;
             }
 
-            final Bson idQuery = Filters.eq("_id", entity.getId());
+            final K id = entity.getId();
+            final Bson idQuery = id == null ? Filters.empty() : Filters.eq("_id", entity.getId());
             this.collection.updateOne(idQuery, Updates.combine(updates), UPDATE_OPTIONS);
         });
     }
